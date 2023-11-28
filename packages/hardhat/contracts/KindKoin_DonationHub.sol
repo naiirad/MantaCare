@@ -27,9 +27,10 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     uint public serviceFeeBasisPoints = 10; // Service fee in basis points (10 = 1%).
     uint public constant maxProjectCount = 20; // Maximum number of projects.
     mapping(uint => Project) private projects; // Mapping of project IDs to Project structs.
-    mapping(address => bool) public supportedTokens; // Mapping to track supported ERC20 tokens.
     mapping(address => mapping(address => uint)) private donorDonations; // Mapping from donor address to a mapping of token addresses to amounts.
-    
+    mapping(address => uint) private donorDonationsDFI; // Mapping from donor address to donated amount in DFI.
+    mapping(address => bool) private supportedTokens; // Mapping to track supported ERC20 tokens.
+
     // Event emitted when a donation is made.
     event DonationMade(address indexed donor, uint indexed projectId, uint amount);
     // Event emitted when a token is added.
@@ -65,14 +66,17 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         require(projects[projectId].wallet != address(0), "Project does not exist");
         require(msg.value > 0, "Donation must be greater than 0");
 
-        uint fee = msg.value.mul(serviceFeeBasisPoints).div(100);
-        uint donationAmount = msg.value.sub(fee);
-
-        projects[projectId].pendingWithdrawals = projects[projectId].pendingWithdrawals.add(donationAmount);
-
+        uint fee = (msg.value * serviceFeeBasisPoints) / 100;
+        uint donationAmount = msg.value - fee;
+        payable(projects[projectId].wallet).transfer(donationAmount);
         payable(owner()).transfer(fee);
 
-        emit DonationMade(msg.sender, projectId, donationAmount);
+        projects[projectId].pendingWithdrawals += donationAmount;
+
+        // Track the donation in DFI
+        donorDonationsDFI[msg.sender] += donationAmount;
+
+        emit DonationMade(msg.sender, projectId, msg.value);
     }
 
     // Allows donations in supported ERC20 tokens.
@@ -134,7 +138,6 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     // Allows the owner to add a supported ERC20 token.
     function addSupportedToken(address tokenAddress) public onlyOwner {
         supportedTokens[tokenAddress] = true;
-        supportedTokenAddresses.push(tokenAddress);
         emit TokenAdded(tokenAddress);
     }
 
@@ -142,13 +145,6 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     function removeSupportedToken(address tokenAddress) public onlyOwner {
         require(supportedTokens[tokenAddress], "Token is not supported");
         supportedTokens[tokenAddress] = false;
-        for (uint i = 0; i < supportedTokenAddresses.length; i++) {
-            if (supportedTokenAddresses[i] == tokenAddress) {
-                supportedTokenAddresses[i] = supportedTokenAddresses[supportedTokenAddresses.length - 1];
-                supportedTokenAddresses.pop();
-                break;
-            }
-        }
         emit TokenRemoved(tokenAddress);
     }
 
@@ -158,7 +154,7 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     }
 
     // Returns the amount of donations made by a donor for a specific project.
-    function getDonorDonations(address donor) public view returns (address[] memory, uint[] memory) {
+    function getDonorDonationsToken(address donor) public view returns (address[] memory, uint[] memory) {
         address[] memory tokens = new address[](supportedTokenAddresses.length);
         uint[] memory amounts = new uint[](supportedTokenAddresses.length);
         for (uint i = 0; i < supportedTokenAddresses.length; i++) {
@@ -166,5 +162,17 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
             amounts[i] = donorDonations[donor][supportedTokenAddresses[i]];
         }
         return (tokens, amounts);
+    }
+
+    // Returns the amount of donations made by a donor in DFI.
+    function getDonorDonationsDFI(address donor) public view returns (uint) {
+        return donorDonationsDFI[donor];
+    }
+
+    // Returns the total amount of donations made by a donor.
+    function getDonorDonationsCombined(address donor) public view returns (address[] memory, uint[] memory, uint) {
+        (address[] memory tokens, uint[] memory amounts) = getDonorDonationsToken(donor);
+        uint dfiDonation = getDonorDonationsDFI(donor);
+        return (tokens, amounts, dfiDonation);
     }
 }
