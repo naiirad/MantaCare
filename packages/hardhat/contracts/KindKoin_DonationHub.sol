@@ -49,6 +49,13 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         // Add the third project
         setProject(2, payable(address(0x90F79bf6EB2c4f870365E785982E1f101E93b906)), "Humanitas in Centro");
     }
+
+    // Modifier to check if a project exists.
+    modifier projectExists(uint projectId) {
+    require(projects[projectId].wallet != address(0), "Project does not exist");
+    _;
+    }
+
     // Allows the owner to add a new project.
     function setProject(uint projectId, address payable projectWallet, string memory projectName) public onlyOwner whenNotPaused returns (bool) {
         require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID or exceeds max limit");
@@ -73,8 +80,7 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     }
 
     // Allows anyone to donate DFI to a project.
-    function donateDFI(uint projectId) public payable whenNotPaused nonReentrant {
-        require(projects[projectId].wallet != address(0), "Project does not exist");
+    function donateDFI(uint projectId) public payable whenNotPaused nonReentrant projectExists(projectId) {
         require(msg.value > 0, "Donation must be greater than 0");
 
         uint fee = (msg.value * serviceFeeBasisPoints) / 1000;
@@ -91,8 +97,7 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     }
 
     // Allows donations in supported ERC20 tokens.
-    function donateWithToken(uint projectId, address tokenAddress, uint amount) public whenNotPaused nonReentrant {
-        require(projects[projectId].wallet != address(0), "Project does not exist");
+    function donateWithToken(uint projectId, address tokenAddress, uint amount) public whenNotPaused nonReentrant projectExists(projectId) {
         require(amount > 0, "Donation must be greater than 0");
         require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount), "Transfer failed");
 
@@ -109,7 +114,7 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         withdrawTokenDonations(projectId, tokenAddress);
     }
 
-    // Allows a project to withdraw their DFI donations.
+    // Automatically transfers DFI donations to the project after a donation is made.
     function withdrawDFIDonations(uint projectId) private {
         Project storage project = projects[projectId];
         uint amount = project.pendingWithdrawals;
@@ -117,7 +122,7 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         project.wallet.transfer(amount);
     }
 
-    // Allows a project to withdraw their token donations.
+    // Automatically transfers Token donations to the project after a donation is made.
     function withdrawTokenDonations(uint projectId, address tokenAddress) private {
         Project storage project = projects[projectId];
         uint amount = project.pendingWithdrawals;
