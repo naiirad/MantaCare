@@ -28,12 +28,16 @@ contract KindKoin_DonationHub is Ownable {
 
     // Function to add a new project. Existing projects cannot be updated (wallet address is immutable).
     function setProject(uint projectId, address payable projectWallet) public onlyOwner {
+        require(projectId >= 0, "Invalid project ID");
+        require(projectWallet != address(0), "Invalid wallet address");
         require(projects[projectId].wallet == address(0), "Project already exists");
         projects[projectId] = Project(projectWallet, 0);
     }
 
     // Function to remove a project from the platform.
     function removeProject(uint projectId) public onlyOwner {
+        require(projectId >= 0, "Invalid project ID");
+        require(projects[projectId].wallet != address(0), "Project does not exist");
         delete projects[projectId];
     }
 
@@ -47,7 +51,8 @@ contract KindKoin_DonationHub is Ownable {
     function donate(uint projectId) public payable {
         require(msg.value > 0, "Donation must be greater than 0");
         require(projects[projectId].wallet != address(0), "Project does not exist");
-
+        require(gasleft() >= 2300, "Insufficient gas");
+        
         uint fee = (msg.value * serviceFeePercentage) / 1000; // Calculating the fee
         uint donationAmount = msg.value - fee;
 
