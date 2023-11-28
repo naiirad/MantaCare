@@ -4,14 +4,18 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "hardhat/console.sol"; // Delete this line before deploying to mainnet!
 
-// Importing necessary OpenZeppelin contracts for ownership, pausing functionality, and reentrancy protection.
+// Importing necessary OpenZeppelin contracts for ownership, pausing functionality, reentrancy protection and safe math.
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 // A smart contract for managing donations to various projects.
 contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
     // Stores information about a donation project.
     struct Project {
         address payable wallet; // Wallet address to receive donations.
@@ -28,18 +32,20 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     event DonationMade(address indexed donor, uint indexed projectId, uint amount);
 
     // Allows the owner to add a new project.
-    function setProject(uint projectId, address payable projectWallet, string memory projectName) public onlyOwner whenNotPaused {
+    function setProject(uint projectId, address payable projectWallet, string memory projectName) public onlyOwner whenNotPaused returns (bool) {
         require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID or exceeds max limit");
         require(projectWallet != address(0), "Invalid wallet address");
         require(projects[projectId].wallet == address(0), "Project already exists");
         projects[projectId] = Project(projectWallet, 0, projectName);
+        return true;
     }
 
     // Allows the owner to remove an existing project.
-    function removeProject(uint projectId) public onlyOwner whenNotPaused {
+    function removeProject(uint projectId) public onlyOwner whenNotPaused returns (bool) {
         require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID");
         require(projects[projectId].wallet != address(0), "Project does not exist");
         delete projects[projectId];
+        return true;
     }
 
     // Allows the owner to adjust the service fee between 1% and 3%.
@@ -53,10 +59,10 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         require(projects[projectId].wallet != address(0), "Project does not exist");
         require(msg.value > 0, "Donation must be greater than 0");
 
-        uint fee = (msg.value * serviceFeeBasisPoints) / 100;
-        uint donationAmount = msg.value - fee;
+        uint fee = msg.value.mul(serviceFeeBasisPoints).div(100);
+        uint donationAmount = msg.value.sub(fee);
 
-        projects[projectId].pendingWithdrawals += donationAmount;
+        projects[projectId].pendingWithdrawals = projects[projectId].pendingWithdrawals.add(donationAmount);
 
         payable(owner()).transfer(fee);
 
@@ -72,8 +78,8 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         IERC20 token = IERC20(tokenAddress);
         uint fee = (amount * serviceFeeBasisPoints) / 100;
         uint donationAmount = amount - fee;
-        require(token.transferFrom(msg.sender, address(this), donationAmount), "Transfer failed");
-        require(token.transferFrom(msg.sender, owner(), fee), "Fee transfer failed");
+        token.safeTransferFrom(msg.sender, address(this), donationAmount);
+        token.safeTransferFrom(msg.sender, owner(), fee);
 
         projects[projectId].pendingWithdrawals += donationAmount;
 
@@ -118,12 +124,16 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
 
     // Allows the owner to add a supported ERC20 token.
     function addSupportedToken(address tokenAddress) public onlyOwner {
+        require(tokenAddress.isContract(), "Token address must be a contract");
         supportedTokens[tokenAddress] = true;
+        emit TokenAdded(tokenAddress);
     }
 
     // Allows the owner to remove a supported ERC20 token.
     function removeSupportedToken(address tokenAddress) public onlyOwner {
+        require(supportedTokens[tokenAddress], "Token is not supported");
         supportedTokens[tokenAddress] = false;
+        emit TokenRemoved(tokenAddress);
     }
 
     // Returns true if a token is supported.
