@@ -16,10 +16,11 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         address payable wallet;
         uint totalDonations;
         uint pendingWithdrawals;
+        string name;
     }
 
-    // Variable to store the service fee percentage. Initialized to 1%.
-    uint public serviceFeePercentage = 10; // 1% = 10 basis points
+    // Variable to store the service fee basispoints. Initialized to 1%.
+    uint public serviceFeeBasisPoints = 10; // 1% = 10 basis points
     // Variable to store the maximum number of projects allowed in the contract 
     uint public constant maxProjectCount = 20; 
 
@@ -28,18 +29,23 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     // Mapping to track the total donations made by each user.
     mapping(address => uint) private userTotalDonations;
 
+    // Additional variables for overall statistics
+    uint public totalDonationsCount = 0;
+    uint public totalDonatedAmount = 0;
+    mapping(address => bool) private uniqueDonors;
+
     // Event to log donation activities.
     event DonationMade(address indexed donor, uint indexed projectId, uint amount);
 
     // Function to add a new project. Existing projects cannot be updated (wallet address is immutable).
-    function setProject(uint projectId, address payable projectWallet) public onlyOwner whenNotPaused {
-    require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID or exceeds max limit");
-    require(projectWallet != address(0), "Invalid wallet address");
-    require(projects[projectId].wallet == address(0), "Project already exists");
+    function setProject(uint projectId, address payable projectWallet, string memory projectName) public onlyOwner whenNotPaused {
+        require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID or exceeds max limit");
+        require(projectWallet != address(0), "Invalid wallet address");
+        require(projects[projectId].wallet == address(0), "Project already exists");
 
-    // Initialize 'pendingWithdrawals' with 0, together with 'wallet' and 'totalDonations'
-    projects[projectId] = Project(projectWallet, 0, 0);
-}
+        // Direkte Initialisierung des Project-Structs im Mapping
+        projects[projectId] = Project(projectWallet, 0, 0, projectName);
+    }
 
     // Function to remove a project from the platform.
     function removeProject(uint projectId) public onlyOwner whenNotPaused {
@@ -49,19 +55,18 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         delete projects[projectId];
     }
 
-    // Function to adjust the service fee percentage in 0.1% steps.
+    // Function to adjust the service fee basispoints in 0.1% steps.
     function adjustServiceFee(uint newFeePercentage) public onlyOwner {
         require(newFeePercentage >= 0 && newFeePercentage <= 30, "Fee must be between 0% and 3%");
-        serviceFeePercentage = newFeePercentage;
+        serviceFeeBasisPoints = newFeePercentage;
     }
 
     // Function to handle donation transactions to a specific project.
     function donate(uint projectId) public payable whenNotPaused nonReentrant {
         require(msg.value > 0, "Donation must be greater than 0");
         require(projects[projectId].wallet != address(0), "Project does not exist");
-        require(gasleft() >= 2300, "Insufficient gas");
         
-        uint fee = (msg.value * serviceFeePercentage) / 1000; // Calculating the fee
+        uint fee = (msg.value * serviceFeeBasisPoints) / 1000; // Calculating the fee
         uint donationAmount = msg.value - fee;
 
         projects[projectId].totalDonations += donationAmount;
@@ -89,7 +94,6 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     function pause() public onlyOwner {
         _pause();
     }
-
     function unpause() public onlyOwner {
     _unpause();
     }
@@ -107,5 +111,21 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     // Function to retrieve the wallet address of a project based on its ID.
     function getWalletAddressByProjectId(uint projectId) public view returns (address) {
         return projects[projectId].wallet;
+    }
+
+    // Function to list all projects
+    function listAllProjects() public view returns (string[] memory) {
+        string[] memory projectNames = new string[](maxProjectCount);
+        for (uint i = 0; i < maxProjectCount; i++) {
+            if(projects[i].wallet != address(0)) {
+                projectNames[i] = projects[i].name;
+            }
+        }
+        return projectNames;
+    }
+
+    // Function for donation statistics
+    function getDonationStatistics() public view returns (uint, uint) {
+    return (totalDonationsCount, totalDonatedAmount);
     }
 }
