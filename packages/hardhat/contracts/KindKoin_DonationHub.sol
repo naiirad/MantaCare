@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-
 import "hardhat/console.sol"; // Delete this line before deploying to mainnet!
 
 // Importing necessary OpenZeppelin contracts for ownership, pausing functionality, reentrancy protection and safe math.
@@ -27,7 +26,8 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     uint public serviceFeeBasisPoints = 10; // Service fee in basis points (10 = 1%).
     uint public constant maxProjectCount = 20; // Maximum number of projects.
     mapping(uint => Project) private projects; // Mapping of project IDs to Project structs.
-    mapping(address => mapping(address => uint)) private donorDonations; // Mapping from donor address to a mapping of token addresses to amounts.
+    mapping(address => mapping(address => uint)) private donorDonations; // Mapping from donor address to a mapping of DFI to amounts.
+    mapping(address => mapping(address => uint)) private donorDonationsToken; // Mapping from donor address to a mapping of token addresses to amounts.
     mapping(address => uint) private donorDonationsDFI; // Mapping from donor address to donated amount in DFI.
     mapping(address => bool) private supportedTokens; // Mapping to track supported ERC20 tokens.
 
@@ -37,7 +37,18 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     event TokenAdded(address indexed tokenAddress);
     // Event emitted when a token is removed.
     event TokenRemoved(address indexed tokenAddress);
+    // Event emitted when a token donation is made.
+    event TokenDonationMade(address indexed donor, uint indexed projectId, address indexed tokenAddress, uint amount);
 
+    // Constructor to add initial projects.
+    constructor() {
+        // Add the first project
+        setProject(0, payable(address(0x70997970C51812dc3A010C7d01b50e0d17dc79C8)), "Medical Response Crew");
+        // Add the second project
+        setProject(1, payable(address(0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC)), "Crisis Relief Team");
+        // Add the third project
+        setProject(2, payable(address(0x90F79bf6EB2c4f870365E785982E1f101E93b906)), "Humanitas in Centro");
+    }
     // Allows the owner to add a new project.
     function setProject(uint projectId, address payable projectWallet, string memory projectName) public onlyOwner whenNotPaused returns (bool) {
         require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID or exceeds max limit");
@@ -62,13 +73,12 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     }
 
     // Allows anyone to donate DFI to a project.
-    function donate(uint projectId) public payable whenNotPaused nonReentrant {
+    function donateDFI(uint projectId) public payable whenNotPaused nonReentrant {
         require(projects[projectId].wallet != address(0), "Project does not exist");
         require(msg.value > 0, "Donation must be greater than 0");
 
-        uint fee = (msg.value * serviceFeeBasisPoints) / 100;
+        uint fee = (msg.value * serviceFeeBasisPoints) / 1000;
         uint donationAmount = msg.value - fee;
-        payable(projects[projectId].wallet).transfer(donationAmount);
         payable(owner()).transfer(fee);
 
         projects[projectId].pendingWithdrawals += donationAmount;
@@ -77,36 +87,42 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         donorDonationsDFI[msg.sender] += donationAmount;
 
         emit DonationMade(msg.sender, projectId, msg.value);
+        withdrawDFIDonations(projectId);
     }
 
     // Allows donations in supported ERC20 tokens.
     function donateWithToken(uint projectId, address tokenAddress, uint amount) public whenNotPaused nonReentrant {
         require(projects[projectId].wallet != address(0), "Project does not exist");
         require(amount > 0, "Donation must be greater than 0");
-        require(supportedTokens[tokenAddress], "Unsupported token");
+        require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount), "Transfer failed");
 
-        IERC20 token = IERC20(tokenAddress);
-        uint fee = (amount * serviceFeeBasisPoints) / 100;
+        uint fee = (amount * serviceFeeBasisPoints) / 1000;
         uint donationAmount = amount - fee;
-        token.safeTransferFrom(msg.sender, address(this), donationAmount);
-        token.safeTransferFrom(msg.sender, owner(), fee);
+        IERC20(tokenAddress).transfer(owner(), fee);
 
         projects[projectId].pendingWithdrawals += donationAmount;
 
-        // Track the donation
-        donorDonations[msg.sender][tokenAddress] += donationAmount;
+        // Track the donation in tokens
+        donorDonationsToken[msg.sender][tokenAddress] += donationAmount;
 
-        emit DonationMade(msg.sender, projectId, amount);
+        emit TokenDonationMade(msg.sender, projectId, tokenAddress, amount);
+        withdrawTokenDonations(projectId, tokenAddress);
     }
 
-    // Allows a project to withdraw their donations.
-    function withdrawDonations(uint projectId) public nonReentrant {
+    // Allows a project to withdraw their DFI donations.
+    function withdrawDFIDonations(uint projectId) private {
         Project storage project = projects[projectId];
-        require(msg.sender == project.wallet, "Only project wallet can withdraw");
-        require(project.pendingWithdrawals > 0, "No funds to withdraw");
         uint amount = project.pendingWithdrawals;
         project.pendingWithdrawals = 0;
         project.wallet.transfer(amount);
+    }
+
+    // Allows a project to withdraw their token donations.
+    function withdrawTokenDonations(uint projectId, address tokenAddress) private {
+        Project storage project = projects[projectId];
+        uint amount = project.pendingWithdrawals;
+        project.pendingWithdrawals = 0;
+        IERC20(tokenAddress).transfer(project.wallet, amount);
     }
 
     // Allows the owner to pause contract functions.

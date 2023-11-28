@@ -7,8 +7,13 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     KindKoin_DonationHub: {
-      address: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
+      address: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
       abi: [
+        {
+          inputs: [],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
         {
           anonymous: false,
           inputs: [
@@ -85,6 +90,37 @@ const deployedContracts = {
             {
               indexed: true,
               internalType: "address",
+              name: "donor",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "projectId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "tokenAddress",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "TokenDonationMade",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
               name: "tokenAddress",
               type: "address",
             },
@@ -139,7 +175,7 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          name: "donate",
+          name: "donateDFI",
           outputs: [],
           stateMutability: "payable",
           type: "function",
@@ -452,19 +488,6 @@ const deployedContracts = {
         {
           inputs: [],
           name: "unpause",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "projectId",
-              type: "uint256",
-            },
-          ],
-          name: "withdrawDonations",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
