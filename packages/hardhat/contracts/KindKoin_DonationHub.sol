@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 // A smart contract for managing donations to various projects.
 contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
@@ -23,13 +23,19 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
         string name; // Name of the project.
     }
 
+    address[] public supportedTokenAddresses;
     uint public serviceFeeBasisPoints = 10; // Service fee in basis points (10 = 1%).
     uint public constant maxProjectCount = 20; // Maximum number of projects.
     mapping(uint => Project) private projects; // Mapping of project IDs to Project structs.
     mapping(address => bool) public supportedTokens; // Mapping to track supported ERC20 tokens.
+    mapping(address => mapping(address => uint)) private donorDonations; // Mapping from donor address to a mapping of token addresses to amounts.
     
     // Event emitted when a donation is made.
     event DonationMade(address indexed donor, uint indexed projectId, uint amount);
+    // Event emitted when a token is added.
+    event TokenAdded(address indexed tokenAddress);
+    // Event emitted when a token is removed.
+    event TokenRemoved(address indexed tokenAddress);
 
     // Allows the owner to add a new project.
     function setProject(uint projectId, address payable projectWallet, string memory projectName) public onlyOwner whenNotPaused returns (bool) {
@@ -83,6 +89,9 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
 
         projects[projectId].pendingWithdrawals += donationAmount;
 
+        // Track the donation
+        donorDonations[msg.sender][tokenAddress] += donationAmount;
+
         emit DonationMade(msg.sender, projectId, amount);
     }
 
@@ -124,8 +133,8 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
 
     // Allows the owner to add a supported ERC20 token.
     function addSupportedToken(address tokenAddress) public onlyOwner {
-        require(tokenAddress.isContract(), "Token address must be a contract");
         supportedTokens[tokenAddress] = true;
+        supportedTokenAddresses.push(tokenAddress);
         emit TokenAdded(tokenAddress);
     }
 
@@ -133,11 +142,29 @@ contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     function removeSupportedToken(address tokenAddress) public onlyOwner {
         require(supportedTokens[tokenAddress], "Token is not supported");
         supportedTokens[tokenAddress] = false;
+        for (uint i = 0; i < supportedTokenAddresses.length; i++) {
+            if (supportedTokenAddresses[i] == tokenAddress) {
+                supportedTokenAddresses[i] = supportedTokenAddresses[supportedTokenAddresses.length - 1];
+                supportedTokenAddresses.pop();
+                break;
+            }
+        }
         emit TokenRemoved(tokenAddress);
     }
 
     // Returns true if a token is supported.
     function isTokenSupported(address tokenAddress) public view returns (bool) {
         return supportedTokens[tokenAddress];
+    }
+
+    // Returns the amount of donations made by a donor for a specific project.
+    function getDonorDonations(address donor) public view returns (address[] memory, uint[] memory) {
+        address[] memory tokens = new address[](supportedTokenAddresses.length);
+        uint[] memory amounts = new uint[](supportedTokenAddresses.length);
+        for (uint i = 0; i < supportedTokenAddresses.length; i++) {
+            tokens[i] = supportedTokenAddresses[i];
+            amounts[i] = donorDonations[donor][supportedTokenAddresses[i]];
+        }
+        return (tokens, amounts);
     }
 }
