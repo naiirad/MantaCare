@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     KindKoin_DonationHub: {
-      address: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+      address: "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
       abi: [
         {
           anonymous: false,
@@ -82,6 +82,19 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "address",
+              name: "tokenAddress",
+              type: "address",
+            },
+          ],
+          name: "addSupportedToken",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "uint256",
               name: "newFeePercentage",
               type: "uint256",
@@ -106,59 +119,26 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "getDonationStatistics",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               internalType: "uint256",
               name: "projectId",
               type: "uint256",
             },
-          ],
-          name: "getTotalDonations",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
             {
               internalType: "address",
-              name: "user",
+              name: "tokenAddress",
               type: "address",
             },
-          ],
-          name: "getUserTotalDonations",
-          outputs: [
             {
               internalType: "uint256",
-              name: "",
+              name: "amount",
               type: "uint256",
             },
           ],
-          stateMutability: "view",
+          name: "donateWithToken",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -175,6 +155,25 @@ const deployedContracts = {
               internalType: "address",
               name: "",
               type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "tokenAddress",
+              type: "address",
+            },
+          ],
+          name: "isTokenSupported",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
             },
           ],
           stateMutability: "view",
@@ -253,6 +252,19 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [
+            {
+              internalType: "address",
+              name: "tokenAddress",
+              type: "address",
+            },
+          ],
+          name: "removeSupportedToken",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
           inputs: [],
           name: "renounceOwnership",
           outputs: [],
@@ -296,26 +308,19 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "totalDonatedAmount",
-          outputs: [
+          inputs: [
             {
-              internalType: "uint256",
+              internalType: "address",
               name: "",
-              type: "uint256",
+              type: "address",
             },
           ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "totalDonationsCount",
+          name: "supportedTokens",
           outputs: [
             {
-              internalType: "uint256",
+              internalType: "bool",
               name: "",
-              type: "uint256",
+              type: "bool",
             },
           ],
           stateMutability: "view",
