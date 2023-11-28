@@ -4,16 +4,18 @@ pragma solidity >=0.8.0 <0.9.0;
 // Hardhat console for debugging purposes. Remove this import for production deployment.
 import "hardhat/console.sol";
 
-// Importing OpenZeppelin's Ownable and pausable contract for access control and emergency stop functionalities.
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol"; // for access control
+import "@openzeppelin/contracts/security/Pausable.sol"; // for emergency stop functionalities
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol"; // for preventing reentrancy attacks
+
 
 // The KindKoin_DonationHub contract for handling project donations.
-contract KindKoin_DonationHub is Ownable, Pausable {
+contract KindKoin_DonationHub is Ownable, Pausable, ReentrancyGuard {
     // Project struct to hold each project's wallet address and total donations received.
     struct Project {
         address payable wallet;
         uint totalDonations;
+        uint pendingWithdrawals;
     }
 
     // Variable to store the service fee percentage. Initialized to 1%.
@@ -31,12 +33,13 @@ contract KindKoin_DonationHub is Ownable, Pausable {
 
     // Function to add a new project. Existing projects cannot be updated (wallet address is immutable).
     function setProject(uint projectId, address payable projectWallet) public onlyOwner whenNotPaused {
-        require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID or exceeds max limit");
-        require(projectWallet != address(0), "Invalid wallet address");
-        require(projects[projectId].wallet == address(0), "Project already exists");
-        
-        projects[projectId] = Project(projectWallet, 0);
-    }
+    require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID or exceeds max limit");
+    require(projectWallet != address(0), "Invalid wallet address");
+    require(projects[projectId].wallet == address(0), "Project already exists");
+
+    // Initialize 'pendingWithdrawals' with 0, together with 'wallet' and 'totalDonations'
+    projects[projectId] = Project(projectWallet, 0, 0);
+}
 
     // Function to remove a project from the platform.
     function removeProject(uint projectId) public onlyOwner whenNotPaused {
@@ -53,7 +56,7 @@ contract KindKoin_DonationHub is Ownable, Pausable {
     }
 
     // Function to handle donation transactions to a specific project.
-    function donate(uint projectId) public payable whenNotPaused {
+    function donate(uint projectId) public payable whenNotPaused nonReentrant {
         require(msg.value > 0, "Donation must be greater than 0");
         require(projects[projectId].wallet != address(0), "Project does not exist");
         require(gasleft() >= 2300, "Insufficient gas");
@@ -61,14 +64,25 @@ contract KindKoin_DonationHub is Ownable, Pausable {
         uint fee = (msg.value * serviceFeePercentage) / 1000; // Calculating the fee
         uint donationAmount = msg.value - fee;
 
-        projects[projectId].wallet.transfer(donationAmount);
         projects[projectId].totalDonations += donationAmount;
+        projects[projectId].pendingWithdrawals += donationAmount; // Update of outstanding withdrawals
 
         userTotalDonations[msg.sender] += donationAmount;
 
         payable(owner()).transfer(fee);
 
         emit DonationMade(msg.sender, projectId, donationAmount);
+    }
+
+    // Function for projects to withdraw their donations
+    function withdrawDonations(uint projectId) public nonReentrant {
+        Project storage project = projects[projectId];
+        require(msg.sender == project.wallet, "Only project wallet can withdraw");
+        require(project.pendingWithdrawals > 0, "No funds to withdraw");
+
+        uint amount = project.pendingWithdrawals;
+        project.pendingWithdrawals = 0;
+        project.wallet.transfer(amount);
     }
 
     // Functions for pausing and resuming the contract
