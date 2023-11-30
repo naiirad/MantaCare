@@ -1,62 +1,73 @@
-import Link from "next/link";
+import { useState } from "react";
 import type { NextPage } from "next";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { MetaHeader } from "~~/components/MetaHeader";
+import DonateModal from "~~/components/DonateModal";
+import Image from 'next/image';
 
 const Home: NextPage = () => {
-  return (
-    <>
-      <MetaHeader />
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-left mb-8">
-            <span className="block text-4xl font-bold">Dein Spenden-Hub</span>
-            <span className="block text-2xl mb-16">Willkommen zurück!</span>
-          </h1>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/pages/index.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              KindKoin.sol
-            </code>{" "}
-            in{" "}
-            <code className="bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
-        </div>
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contract
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-          </div>
+  const openDonateModal = (projectId: number) => {
+    setSelectedProject(projectId);
+    setShowModal(true);
+  };
+
+  const projects = [
+    { id: 0, name: "Medical Response Crew", imageUrl: "/mrc.jpg" },
+    { id: 1, name: "Crisis Relief Team", imageUrl: "/crt.png" },
+    { id: 2, name: "Humanitas in Centro", imageUrl: "/hic.jpg" },
+    // Weitere Projekte hinzufügen mit ihren Bildpfaden
+  ];
+
+  return (
+    <div className="relative max-w-screen-xl mx-auto">
+      <div className="background-container">
+        <Image 
+          src="/MantaCare_Hintergrund.png" 
+          alt="Hintergrund" 
+          layout="fill" 
+          objectFit="cover" 
+          className="background-image" 
+        />
+      </div>
+      
+      <div className="text-over-image absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-4">
+        <div className="max-w-md mx-auto text-left">
+          <h1 className="text-4xl font-bold text-white">Dein Spenden-Hub</h1>
+          <h2 className="text-xl text-white">Willkommen zurück!</h2>
         </div>
       </div>
-    </>
+
+      <main className="container mx-auto my-8 relative mt-64">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 my-8">
+          {projects.map(project => (
+            <div key={project.id} className="bg-project-square p-4 rounded-xl shadow-md">
+              <Image
+                src={project.imageUrl}
+                alt={`Project ${project.name}`}
+                width={500}  
+                height={300} 
+                className="rounded-md"
+              />
+              <h2 className="text-xl font-semibold text-white mt-4">{project.name}</h2>
+              <div className="mt-4">
+                <button
+                  className="btn-primary text-white p-2 rounded btn-hover-donate"
+                  onClick={() => openDonateModal(project.id)}
+                >
+                  Donate
+                </button>
+                <button className="btn-secondary text-black p-2 rounded ml-2 btn-hover-details">Details</button>
+              </div>
+            </div>
+          ))}
+        </section>
+      </main>
+
+      {showModal && selectedProject !== null && (
+        <DonateModal projectId={selectedProject} onClose={() => setShowModal(false)} />
+      )}
+    </div>
   );
 };
 

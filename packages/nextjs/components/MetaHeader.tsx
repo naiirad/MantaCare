@@ -14,7 +14,7 @@ type MetaHeaderProps = {
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/` : "/";
 
 export const MetaHeader = ({
-  title = "KindKoin App",
+  title = "MantaCare App",
   description = "Connect. Donate. Transform.",
   image = "thumbnail.jpg",
   twitterCard = "summary_large_image",

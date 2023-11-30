@@ -21,7 +21,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("KindKoin_DonationHub", {
+  await deploy("MantaCare_DonationHub", {
     from: deployer,
     log: true,
     autoMine: true,
