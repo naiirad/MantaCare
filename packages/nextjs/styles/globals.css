@@ -30,3 +30,13 @@ p {
 .btn.btn-ghost {
   @apply shadow-none;
 }
+
+.button-gradient-hover:hover {
+  background: linear-gradient(45deg, #b38945, #fcc875);
+  color: white; /* Optional: Ändern Sie die Textfarbe, falls gewünscht */
+}
+
+.button-gradient-hover2:hover {
+  background: linear-gradient(45deg, #143146, #25597e);
+  color: white; /* Optional: Ändern Sie die Textfarbe, falls gewünscht */
+}

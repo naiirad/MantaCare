@@ -61,14 +61,14 @@ const Home: NextPage = () => {
               {!project.isSpecial && (
                 <div className="mt-4">
                   <button
-                    className="bg-accent dark:text-white text-black p-2 rounded hover:bg-primary"
+                    className="bg-accent dark:text-white text-black p-2 rounded hover: button-gradient-hover"
                     onClick={() => openDonateModal(project.id)}
                   >
                     Donate
                   </button>
                   <Link
                     href={getProjectPath(project.name)}
-                    className="bg-primary dark:text-white text-black p-2 rounded ml-2 hover:bg-accent"
+                    className="bg-primary dark:text-white text-black p-2 rounded ml-2 hover: button-gradient-hover2"
                   >
                     Details
                   </Link>
