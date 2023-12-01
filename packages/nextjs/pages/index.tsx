@@ -18,7 +18,7 @@ const Home: NextPage = () => {
     { id: 1, name: "Crisis Relief Team", imageUrl: "/crt.png" },
     { id: 2, name: "Humanitas in Centro", imageUrl: "/hic.jpg" },
     { id: 3, name: "MantaCare", imageUrl: "/mantacare_logo_bg.png" },
-    { id: 4, name: "Projektvorschlag", imageUrl: "/next.png", isSpecial: true },
+    { id: 4, name: "Projektvorschlag (coming soon)", imageUrl: "/next.png", isSpecial: true },
     // Weitere Projekte hinzufügen mit ihren Bildpfaden
   ];
 
