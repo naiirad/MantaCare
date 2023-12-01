@@ -34,8 +34,8 @@ export const Footer = () => {
             </div>
             <span>·</span>
             <div className="text-center">
-              <Link href="/Impressum">
-                <a className="link">Impressum</a>
+              <Link href="/Impressum" className="link">
+                Impressum
               </Link>
             </div>
           </div>
