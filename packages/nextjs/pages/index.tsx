@@ -1,7 +1,8 @@
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import type { NextPage } from "next";
 import DonateModal from "~~/components/DonateModal";
-import Image from 'next/image';
 
 const Home: NextPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -19,45 +20,53 @@ const Home: NextPage = () => {
     // Weitere Projekte hinzufügen mit ihren Bildpfaden
   ];
 
+  const getProjectPath = (name: string) => {
+    return `/${name.toLowerCase().replace(/\s+/g, "-")}`;
+  };
+
   return (
-    <div className="relative max-w-screen-xl mx-auto">
+    <div className="relative max-w-screen-2xl mx-auto">
       <div className="background-container">
-        <Image 
-          src="/MantaCare_Hintergrund.png" 
-          alt="Hintergrund" 
-          layout="fill" 
-          objectFit="cover" 
-          className="background-image" 
+        <Image
+          src="/MantaCare_Hintergrund.png"
+          alt="Hintergrund"
+          width={572} // Ersetzen Sie dies durch die tatsächliche Breite Ihres Bildes
+          height={572} // Ersetzen Sie dies durch die tatsächliche Höhe Ihres Bildes
+          layout="responsive"
         />
       </div>
-      
-      <div className="text-over-image absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-4">
+
+      <div className="text-over-image absolute top-1/3 -left-96 right-32 transform -translate-y-1/2">
         <div className="max-w-md mx-auto text-left">
-          <h1 className="text-4xl font-bold text-white">Dein Spenden-Hub</h1>
-          <h2 className="text-xl text-white">Willkommen zurück!</h2>
+          <h1 className="text-4xl font-bold dark:text-white text-black">Dein Spenden-Hub</h1>
+          <h2 className="text-xl dark:text-white text-black">Willkommen zurück!</h2>
         </div>
       </div>
 
-      <main className="container mx-auto my-8 relative mt-64">
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 my-8">
+      <main className="container mx-auto -my-32 p-16 relative mb-8">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {projects.map(project => (
-            <div key={project.id} className="bg-project-square p-4 rounded-xl shadow-md">
-              <Image
+            <div key={project.id} className="bg-secondary p-4 rounded-xl shadow-md w-3/4 mx-auto">
+              <img
                 src={project.imageUrl}
                 alt={`Project ${project.name}`}
-                width={500}  
-                height={300} 
-                className="rounded-md"
+                className="rounded-md w-full h-auto" // Tailwind CSS Klassen für Breite und Höhe
+                // style={{ width: '100%', height: 'auto' }} // Alternativ Inline-Style
               />
-              <h2 className="text-xl font-semibold text-white mt-4">{project.name}</h2>
+              <h2 className="text-xl font-semibold dark:text-white text-black mt-4">{project.name}</h2>
               <div className="mt-4">
                 <button
-                  className="btn-primary text-white p-2 rounded btn-hover-donate"
+                  className="bg-accent dark:text-white text-black p-2 rounded hover:bg-primary"
                   onClick={() => openDonateModal(project.id)}
                 >
                   Donate
                 </button>
-                <button className="btn-secondary text-black p-2 rounded ml-2 btn-hover-details">Details</button>
+                <Link
+                  href={getProjectPath(project.name)}
+                  className="bg-primary dark:text-white text-black p-2 rounded ml-2 hover:bg-accent"
+                >
+                  Details
+                </Link>
               </div>
             </div>
           ))}

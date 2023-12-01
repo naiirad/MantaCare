@@ -1,14 +1,16 @@
-import { useState } from "react";
-// Importiere hier weitere benötigte Hooks und Bibliotheken
+import React, { useState } from "react";
+
+// Stellen Sie sicher, dass React importiert wird
 
 type DonateModalProps = {
+  projectId: number;
   onClose: () => void;
 };
 
-const DonateModal: React.FC<DonateModalProps> = ({ onClose }) => {
+const DonateModal: React.FC<DonateModalProps> = ({ projectId, onClose }) => {
   const [currency, setCurrency] = useState<string>("DFI");
   const [amount, setAmount] = useState<string>("");
-  const [isApproved, setIsApproved] = useState<boolean>(true); // Annahme: DFI benötigt keine Genehmigung
+  const [isApproved, setIsApproved] = useState<boolean>(true);
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCurrency(e.target.value);
@@ -35,6 +37,7 @@ const DonateModal: React.FC<DonateModalProps> = ({ onClose }) => {
 
   return (
     <div className="modal">
+      <div>Projekt-ID: {projectId}</div>
       <div className="modal-content">
         <select value={currency} onChange={handleCurrencyChange}>
           <option value="DFI">DFI</option>
@@ -44,11 +47,7 @@ const DonateModal: React.FC<DonateModalProps> = ({ onClose }) => {
           <option value="jUSD">jUSD</option>
         </select>
         <input type="text" value={amount} onChange={handleAmountChange} placeholder="Betrag" />
-        {isApproved ? (
-          <button onClick={handleDonate}>Senden</button>
-        ) : (
-          <button onClick={handleApprove}>Approve</button>
-        )}
+        {isApproved ? <button onClick={handleDonate}>Senden</button> : <button onClick={handleApprove}>Approve</button>}
         <button onClick={onClose}>Schließen</button>
       </div>
     </div>

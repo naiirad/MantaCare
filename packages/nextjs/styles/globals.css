@@ -4,7 +4,7 @@
 
 :root,
 [data-theme] {
-  background: #143146;
+  background: hsl(var(--b2));
 }
 
 body {
@@ -29,25 +29,4 @@ p {
 
 .btn.btn-ghost {
   @apply shadow-none;
-}
-
-/* Eigene Klassen für die Button-Farben */
-.bg-project-square {
-  background-color: #306b81; /* Hintergrund der Projektboxen */
-}
-
-.btn-primary {
-  background-color: #b38945; /* Hintergrund des "Donate" Buttons */
-}
-
-.btn-secondary {
-  background-color: #bce8eb; /* Hintergrund des "Details" Buttons */
-}
-
-.bg-header {
-  background-color: #143146; /* Hintergrund der Headerbox */
-}
-
-.bg-hover {
-  background-color: #c483b0; /* Hintergrund beim Hovern */
 }
