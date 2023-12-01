@@ -1,11 +1,6 @@
 # MantaCare Donation Plattform v0.2
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://kindkoin.io">Website</a>
-</h4>
-
-Ainnovative web3 dApp where you can donate Cryptocurrencies and Tokens to small projekts with a humanitarian focus.
+An innovative web3 dApp where you can donate Cryptocurrencies and Tokens to small projekts with a humanitarian focus.
 
 ⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, and Typescript.
 
