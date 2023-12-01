@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { hardhat } from "viem/chains";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
@@ -21,7 +22,7 @@ export const Footer = () => {
         <ul className="menu menu-horizontal w-full">
           <div className="flex justify-center items-center gap-2 text-sm w-full">
             <div className="text-center">
-              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
+              <a href="https://t.me/MantaCare" target="_blank" rel="noreferrer" className="link">
                 Telegram
               </a>
             </div>
@@ -33,9 +34,9 @@ export const Footer = () => {
             </div>
             <span>·</span>
             <div className="text-center">
-              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
-                Impressum
-              </a>
+              <Link href="/Impressum">
+                <a className="link">Impressum</a>
+              </Link>
             </div>
           </div>
         </ul>
