@@ -27,7 +27,7 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/FAQ",
   },
   {
-    label: "Das Projekt",
+    label: "About",
     href: "/mantacare",
   },
 ];
