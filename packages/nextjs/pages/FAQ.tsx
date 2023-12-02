@@ -7,7 +7,7 @@ const FAQ: NextPage = () => {
       <MetaHeader title="FAQ - MantaCare" description="Frequently asked questions about MantaCare" />
 
       <main className="pt-24">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="relative max-w-screen-2xl mx-auto px-4">
           <h1 className="text-4xl text-center font-bold mb-4" style={{ color: "#b38945" }}>
             FAQ - MantaCare
           </h1>
