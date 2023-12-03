@@ -9,17 +9,19 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
+// defines the available categories for projects.
+enum ProjectCategory { Medical, Humanitarian, Infrastructure, Education, Environment, TechnologyInnovation }
 
 // A smart contract for managing donations to various projects.
 contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
-    using SafeMath for uint256;
     using SafeERC20 for IERC20;
     // Stores information about a donation project.
     struct Project {
         address payable wallet; // Wallet address to receive donations.
         uint pendingWithdrawals; // Amount available for withdrawal.
         string name; // Name of the project.
+        ProjectCategory category; // Category of the project.
     }
 
     address[] public supportedTokenAddresses;
@@ -39,15 +41,21 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
     event TokenRemoved(address indexed tokenAddress);
     // Event emitted when a token donation is made.
     event TokenDonationMade(address indexed donor, uint indexed projectId, address indexed tokenAddress, uint amount);
+    // Event emitted when a project is added.
+    event ProjectAdded(uint indexed projectId, string name, ProjectCategory category);
+    // Event emitted when a project is removed.
+    event ProjectRemoved(uint indexed projectId);
+    // Event emitted when the service fee is adjusted.
+    event ServiceFeeAdjusted(uint newFeePercentage);
 
     // Constructor to add initial projects.
     constructor() {
         // Add the first project
-        setProject(0, payable(address(0x70997970C51812dc3A010C7d01b50e0d17dc79C8)), "Medical Response Crew");
+        setProject(0, payable(address(0x70997970C51812dc3A010C7d01b50e0d17dc79C8)), "Medical Response Crew", ProjectCategory.Medical);
         // Add the second project
-        setProject(1, payable(address(0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC)), "Crisis Relief Team");
+        setProject(1, payable(address(0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC)), "Crisis Relief Team", ProjectCategory.Humanitarian);
         // Add the third project
-        setProject(2, payable(address(0x90F79bf6EB2c4f870365E785982E1f101E93b906)), "Humanitas in Centro");
+        setProject(2, payable(address(0x90F79bf6EB2c4f870365E785982E1f101E93b906)), "Humanitas in Centro", ProjectCategory.Infrastructure);
     }
 
     // Modifier to check if a project exists.
@@ -57,19 +65,27 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
     }
 
     // Allows the owner to add a new project.
-    function setProject(uint projectId, address payable projectWallet, string memory projectName) public onlyOwner whenNotPaused returns (bool) {
+    function setProject(uint projectId, address payable projectWallet, string memory projectName, ProjectCategory category) public onlyOwner whenNotPaused returns (bool) {
+        require(uint(category) >= 0 && uint(category) <= uint(ProjectCategory.TechnologyInnovation), "Invalid project category");
         require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID or exceeds max limit");
         require(projectWallet != address(0), "Invalid wallet address");
         require(projects[projectId].wallet == address(0), "Project already exists");
-        projects[projectId] = Project(projectWallet, 0, projectName);
+
+        projects[projectId] = Project(projectWallet, 0, projectName, category);
+        emit ProjectAdded(projectId, projectName, category);
+
         return true;
     }
+
 
     // Allows the owner to remove an existing project.
     function removeProject(uint projectId) public onlyOwner whenNotPaused returns (bool) {
         require(projectId >= 0 && projectId < maxProjectCount, "Invalid project ID");
         require(projects[projectId].wallet != address(0), "Project does not exist");
         delete projects[projectId];
+        
+        emit ProjectRemoved(projectId);
+        
         return true;
     }
 
@@ -77,9 +93,10 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
     function adjustServiceFee(uint newFeePercentage) public onlyOwner {
         require(newFeePercentage >= 0 && newFeePercentage <= 30, "Fee must be between 0% and 3%");
         serviceFeeBasisPoints = newFeePercentage;
+        emit ServiceFeeAdjusted(newFeePercentage);
     }
 
-    // Allows anyone to donate DFI to a project.
+    // Allows single donations in DFI to a project.
     function donateDFI(uint projectId) public payable whenNotPaused nonReentrant projectExists(projectId) {
         require(msg.value > 0, "Donation must be greater than 0");
 
@@ -96,7 +113,88 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
         withdrawDFIDonations(projectId);
     }
 
-    // Allows donations in supported ERC20 tokens.
+    // Function to donate DFI evenly across all projects
+    function donateDFIToAllProjects() public payable whenNotPaused nonReentrant {
+        require(msg.value > 0, "Donation must be greater than 0");
+
+        uint fee = (msg.value * serviceFeeBasisPoints) / 1000;
+        uint remainingAmount = msg.value - fee;
+        payable(owner()).transfer(fee);
+
+        uint totalDonated = 0;
+        uint[] memory projectIndices = new uint[](maxProjectCount);
+        uint projectCount = 0;
+        uint lastProjectIndex;
+
+        // Counting and saving indices of active projects
+        for (uint i = 0; i < maxProjectCount; i++) {
+            if (projects[i].wallet != address(0)) {
+                lastProjectIndex = i;
+                projectIndices[projectCount] = i;
+                projectCount++;
+            }
+        }
+
+        require(projectCount > 0, "No projects to donate to");
+
+        uint donationPerProject = remainingAmount / projectCount;
+
+        // Distribution of donations to projects
+        for (uint i = 0; i < projectCount; i++) {
+            uint projectIndex = projectIndices[i];
+            projects[projectIndex].wallet.transfer(donationPerProject);
+            projects[projectIndex].pendingWithdrawals += donationPerProject;
+            totalDonated += donationPerProject;
+        }
+
+        // Rounding error handling and distribution to last project
+        uint roundingError = remainingAmount - totalDonated;
+        if (roundingError > 0) {
+            projects[lastProjectIndex].wallet.transfer(roundingError);
+            projects[lastProjectIndex].pendingWithdrawals += roundingError;
+        }
+    }
+
+    // Function to donate DFI to projects of a specific category
+    function donateDFIToCategory(ProjectCategory category) public payable whenNotPaused nonReentrant {
+        require(msg.value > 0, "Donation must be greater than 0");
+
+        uint fee = (msg.value * serviceFeeBasisPoints) / 1000;
+        uint remainingAmount = msg.value - fee;
+        payable(owner()).transfer(fee);
+
+        uint totalDonated = 0;
+        uint[] memory projectIndices = new uint[](maxProjectCount);
+        uint projectCount = 0;
+        uint lastProjectIndex;
+
+        for (uint i = 0; i < maxProjectCount; i++) {
+            if (projects[i].category == category) {
+                lastProjectIndex = i;
+                projectIndices[projectCount] = i;
+                projectCount++;
+            }
+        }
+
+        require(projectCount > 0, "No projects found in this category");
+
+        uint donationPerProject = remainingAmount / projectCount;
+
+        for (uint i = 0; i < projectCount; i++) {
+            uint projectIndex = projectIndices[i];
+            projects[projectIndex].wallet.transfer(donationPerProject);
+            projects[projectIndex].pendingWithdrawals += donationPerProject;
+            totalDonated += donationPerProject;
+        }
+
+        uint roundingError = remainingAmount - totalDonated;
+        if (roundingError > 0) {
+            projects[lastProjectIndex].wallet.transfer(roundingError);
+            projects[lastProjectIndex].pendingWithdrawals += roundingError;
+        }
+    }
+
+    // Allows single donations in supported ERC20 tokens.
     function donateWithToken(uint projectId, address tokenAddress, uint amount) public whenNotPaused nonReentrant projectExists(projectId) {
         require(amount > 0, "Donation must be greater than 0");
         require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount), "Transfer failed");
@@ -112,6 +210,86 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
 
         emit TokenDonationMade(msg.sender, projectId, tokenAddress, amount);
         withdrawTokenDonations(projectId, tokenAddress);
+    }
+
+    // Function to donate ERC20 tokens evenly across all projects
+    function donateTokensToAllProjects(address tokenAddress, uint amount) public whenNotPaused nonReentrant {
+        require(amount > 0, "Donation amount must be greater than 0");
+        require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount), "Transfer failed");
+
+        uint fee = (amount * serviceFeeBasisPoints) / 1000;
+        uint remainingAmount = amount - fee;
+        IERC20(tokenAddress).transfer(owner(), fee);
+
+        uint totalDonated = 0;
+        uint[] memory projectIndices = new uint[](maxProjectCount);
+        uint projectCount = 0;
+        uint lastProjectIndex;
+
+        for (uint i = 0; i < maxProjectCount; i++) {
+            if (projects[i].wallet != address(0)) {
+                lastProjectIndex = i;
+                projectIndices[projectCount] = i;
+                projectCount++;
+            }
+        }
+
+        require(projectCount > 0, "No projects to donate to");
+
+        uint donationPerProject = remainingAmount / projectCount;
+
+        for (uint i = 0; i < projectCount; i++) {
+            uint projectIndex = projectIndices[i];
+            IERC20(tokenAddress).transfer(projects[projectIndex].wallet, donationPerProject);
+            projects[projectIndex].pendingWithdrawals += donationPerProject;
+            totalDonated += donationPerProject;
+        }
+
+        uint roundingError = remainingAmount - totalDonated;
+        if (roundingError > 0) {
+            projects[lastProjectIndex].wallet.transfer(roundingError);
+            projects[lastProjectIndex].pendingWithdrawals += roundingError;
+        }
+    }
+
+    // Function to donate ERC20 tokens to projects of a specific category
+    function donateTokensToCategory(ProjectCategory category, address tokenAddress, uint amount) public whenNotPaused nonReentrant {
+        require(amount > 0, "Donation amount must be greater than 0");
+        require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount), "Transfer failed");
+
+        uint fee = (amount * serviceFeeBasisPoints) / 1000;
+        uint remainingAmount = amount - fee;
+        IERC20(tokenAddress).transfer(owner(), fee);
+
+        uint totalDonated = 0;
+        uint[] memory projectIndices = new uint[](maxProjectCount);
+        uint projectCount = 0;
+        uint lastProjectIndex;
+
+        for (uint i = 0; i < maxProjectCount; i++) {
+            if (projects[i].category == category) {
+                lastProjectIndex = i;
+                projectIndices[projectCount] = i;
+                projectCount++;
+            }
+        }
+
+        require(projectCount > 0, "No projects found in this category");
+
+        uint donationPerProject = remainingAmount / projectCount;
+
+        for (uint i = 0; i < projectCount; i++) {
+            uint projectIndex = projectIndices[i];
+            IERC20(tokenAddress).transfer(projects[projectIndex].wallet, donationPerProject);
+            projects[projectIndex].pendingWithdrawals += donationPerProject;
+            totalDonated += donationPerProject;
+        }
+
+        uint roundingError = remainingAmount - totalDonated;
+        if (roundingError > 0) {
+            projects[lastProjectIndex].wallet.transfer(roundingError);
+            projects[lastProjectIndex].pendingWithdrawals += roundingError;
+        }
     }
 
     // Automatically transfers DFI donations to the project after a donation is made.
