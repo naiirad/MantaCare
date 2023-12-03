@@ -76,6 +76,57 @@ const deployedContracts = {
           inputs: [
             {
               indexed: true,
+              internalType: "uint256",
+              name: "projectId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "enum ProjectCategory",
+              name: "category",
+              type: "uint8",
+            },
+          ],
+          name: "ProjectAdded",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "projectId",
+              type: "uint256",
+            },
+          ],
+          name: "ProjectRemoved",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "newFeePercentage",
+              type: "uint256",
+            },
+          ],
+          name: "ServiceFeeAdjusted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
               internalType: "address",
               name: "tokenAddress",
               type: "address",
@@ -181,6 +232,67 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "donateDFIToAllProjects",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "enum ProjectCategory",
+              name: "category",
+              type: "uint8",
+            },
+          ],
+          name: "donateDFIToCategory",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "tokenAddress",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "donateTokensToAllProjects",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "enum ProjectCategory",
+              name: "category",
+              type: "uint8",
+            },
+            {
+              internalType: "address",
+              name: "tokenAddress",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "donateTokensToCategory",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "uint256",
@@ -201,78 +313,6 @@ const deployedContracts = {
           name: "donateWithToken",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "donor",
-              type: "address",
-            },
-          ],
-          name: "getDonorDonationsCombined",
-          outputs: [
-            {
-              internalType: "address[]",
-              name: "",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "",
-              type: "uint256[]",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "donor",
-              type: "address",
-            },
-          ],
-          name: "getDonorDonationsDFI",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "donor",
-              type: "address",
-            },
-          ],
-          name: "getDonorDonationsToken",
-          outputs: [
-            {
-              internalType: "address[]",
-              name: "",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "",
-              type: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
           type: "function",
         },
         {
@@ -440,6 +480,11 @@ const deployedContracts = {
               internalType: "string",
               name: "projectName",
               type: "string",
+            },
+            {
+              internalType: "enum ProjectCategory",
+              name: "category",
+              type: "uint8",
             },
           ],
           name: "setProject",
