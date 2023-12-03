@@ -28,9 +28,6 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
     uint public serviceFeeBasisPoints = 10; // Service fee in basis points (10 = 1%).
     uint public constant maxProjectCount = 20; // Maximum number of projects.
     mapping(uint => Project) private projects; // Mapping of project IDs to Project structs.
-    mapping(address => mapping(address => uint)) private donorDonations; // Mapping from donor address to a mapping of DFI to amounts.
-    mapping(address => mapping(address => uint)) private donorDonationsToken; // Mapping from donor address to a mapping of token addresses to amounts.
-    mapping(address => uint) private donorDonationsDFI; // Mapping from donor address to donated amount in DFI.
     mapping(address => bool) private supportedTokens; // Mapping to track supported ERC20 tokens.
 
     // Event emitted when a donation is made.
@@ -105,9 +102,6 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
         payable(owner()).transfer(fee);
 
         projects[projectId].pendingWithdrawals += donationAmount;
-
-        // Track the donation in DFI
-        donorDonationsDFI[msg.sender] += donationAmount;
 
         emit DonationMade(msg.sender, projectId, msg.value);
         withdrawDFIDonations(projectId);
@@ -204,9 +198,6 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
         IERC20(tokenAddress).transfer(owner(), fee);
 
         projects[projectId].pendingWithdrawals += donationAmount;
-
-        // Track the donation in tokens
-        donorDonationsToken[msg.sender][tokenAddress] += donationAmount;
 
         emit TokenDonationMade(msg.sender, projectId, tokenAddress, amount);
         withdrawTokenDonations(projectId, tokenAddress);
@@ -350,28 +341,5 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
     // Returns true if a token is supported.
     function isTokenSupported(address tokenAddress) public view returns (bool) {
         return supportedTokens[tokenAddress];
-    }
-
-    // Returns the amount of donations made by a donor for a specific project.
-    function getDonorDonationsToken(address donor) public view returns (address[] memory, uint[] memory) {
-        address[] memory tokens = new address[](supportedTokenAddresses.length);
-        uint[] memory amounts = new uint[](supportedTokenAddresses.length);
-        for (uint i = 0; i < supportedTokenAddresses.length; i++) {
-            tokens[i] = supportedTokenAddresses[i];
-            amounts[i] = donorDonations[donor][supportedTokenAddresses[i]];
-        }
-        return (tokens, amounts);
-    }
-
-    // Returns the amount of donations made by a donor in DFI.
-    function getDonorDonationsDFI(address donor) public view returns (uint) {
-        return donorDonationsDFI[donor];
-    }
-
-    // Returns the total amount of donations made by a donor.
-    function getDonorDonationsCombined(address donor) public view returns (address[] memory, uint[] memory, uint) {
-        (address[] memory tokens, uint[] memory amounts) = getDonorDonationsToken(donor);
-        uint dfiDonation = getDonorDonationsDFI(donor);
-        return (tokens, amounts, dfiDonation);
     }
 }
