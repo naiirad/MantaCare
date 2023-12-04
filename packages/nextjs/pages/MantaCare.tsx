@@ -16,24 +16,24 @@ const MRC: NextPage = () => {
           <section className="mb-6">
             <h2 className="text-2xl font-semibold mb-4">Entstehung von MantaCare</h2>
             <p>
-              MantaCare ist eine persönliche Initiative, geboren aus meinen Erfahrungen als Teil der „Medical Response
-              Crew“ in Kharkiv, Ostukraine. Im Oktober 2023. Es eröffnete sich mir die Welt der humanitären Hilfe in
-              einem neuen Licht. Dort, inmitten des Krieges, entstand die Idee einer dezentralen Web3-Spendenplattform
-              auf der DeFi Metachain – MantaCare.
+              MantaCare ist eine persönliche Initiative die aus meinen Erfahrungen als Teil der „Medical Response Crew“
+              geboren wurde. Es eröffnete sich mir die Welt der humanitären Hilfe im Oktober 2023 in einem neuen Licht.
+              Inmitten des Krieges in Kharkiv, Ostukraine, entstand die Idee einer dezentralen Web3-Spendenplattform auf
+              der DeFi Metachain – MantaCare.
             </p>
             <div className="flex flex-col md:flex-row">
               <p className="pr-8">
-                In Kharkiv sah ich das Leid, aber auch den unerschütterlichen Geist der Menschen, sowohl auf der Seite
-                der Bevölkerung, aber auch auf der Seite der „Volunteers“. Ich traf engagierte Ukrainer und Menschen aus
-                der ganzen Welt, die trotz großer Gefahr unermüdlich halfen. Ihre Geschichten und die unmittelbare
-                Konfrontation mit den Herausforderungen kleiner Hilfsorganisationen prägten mich tief. Diese
+                In Kharkiv sah ich das Leid, aber auch den unerschütterlichen Willen der Menschen, sowohl auf der Seite
+                der Bevölkerung als auch auf der Seite der „Volunteers“. Ich traf engagierte Ukrainer und Menschen aus
+                der ganzen Welt, die trotz der stets drohenden großen Gefahr unermüdlich halfen. Ihre Geschichten und
+                die direkte Konfrontation mit den Herausforderungen kleiner Hilfsorganisationen prägten mich tief. Diese
                 Organisationen, oft unbekannt und ohne große finanzielle Rückendeckung, zeichnen sich durch ihre
-                Selbstlosigkeit und die Bereitschaft aus, über ihre Grenzen hinauszugehen – Menschen, die freiwillig
-                ihre Liebsten verlassen, um das erste Mal in ihrem Leben unter Artilleriebeschuss zu stehen, um dann den
-                Bedarf bei Kindern in einem Frontdorf zu ermitteln.
+                Selbstlosigkeit und die Bereitschaft über ihre Grenzen hinauszugehen aus – Menschen, die freiwillig ihre
+                Liebsten verlassen, um das erste Mal in ihrem Leben unter Artilleriebeschuss zu stehen damit sie den
+                Bedarf bei fremden Kindern in einem Frontdorf ermitteln.
               </p>
               <Image
-                src="/beispielbild.jpeg"
+                src="/Ukraine_MantaCare1.jpg"
                 alt="Bild der MRC-Aktion"
                 width={572}
                 height={572}
@@ -47,10 +47,9 @@ const MRC: NextPage = () => {
           <section className="mb-6">
             <h2 className="text-2xl font-semibold mb-4">Herausforderungen und Ziele</h2>
             <p>
-              Diese Erfahrungen offenbarten die größte Stärke, aber auch die größte Schwäche kleiner
-              Hilfsorganisationen: Ihre Agilität und ihr direktes Handeln im Gegensatz zu der oft begrenzten Reichweite
-              und den finanziellen Einschränkungen. Es wurde mir klar, dass nicht der Wille, sondern die finanziellen
-              Möglichkeiten das größte Hindernis darstellen.
+              Diese Erfahrungen offenbarten mir die größte Stärke, aber auch die größte Schwäche kleiner
+              Hilfsorganisationen: Ihre Agilität und ihr konkretes Handeln kommt der Bevölkerung im direkten Übertrag
+              zugute. Gleichzeitig sind die finanziellen Mittel und damit auch die Reichweite stark begrenzt.
             </p>
             <div className="flex flex-col md:flex-row">
               <Image
@@ -63,18 +62,18 @@ const MRC: NextPage = () => {
               />
               <p className="pl-8">
                 Genau hier setzt MantaCare an. Unsere Kernphilosophie basiert darauf, kleine, aber wirkungsvolle
-                Projekte zu unterstützen, die einen weitreichenden Einfluss haben können. Wir wollen die Bekanntheit
+                Projekte zu unterstützen, die einen unmittelbaren Einfluss haben können. Wir wollen die Bekanntheit
                 dieser Organisationen erhöhen, über ihre Potenziale aufklären und ihnen die Mittel zur Verfügung
                 stellen, die sie benötigen. Solche Organisationen gibt es in allen Bereichen, Bildung, Umweltschutz,
                 Forschung oder eben humanitär.
               </p>
             </div>
             <p>
-              MantaCare soll eine Brücke sein zwischen denen, die helfen wollen, und jenen, die Hilfe benötigen, um dann
-              wiederum anderen helfen zu können. Wir streben danach, die Welt Schritt für Schritt zu einem besseren,
-              gerechteren Ort zu machen und das nicht nach dem Prinzip „mehr ist mehr“, sondern mit „gezielt ist mehr“.
-              Dabei ist es uns wichtig, alles so dezentral, transparent und unkompliziert wie möglich zu gestalten.
-              Keine Bürokratie, keine ungenutzten oder unnötig Verschwendeten Ressourcen, keine Abhängigkeiten.
+              MantaCare soll eine Brücke zwischen denen, die helfen wollen und denen, die Hilfe benötigen um anderen zu
+              helfen, darstellen. Wir streben danach Zivilcourage wieder zu fördern, Mitmenschen auch über Grenzen
+              hinweg als Nachbarn zu behandeln und sich auch für Ereignisse verantwortlich zu fühlen, die nicht direkt
+              vor den Augen passieren. Dabei ist es uns wichtig, alles so dezentral, transparent und unkompliziert wie
+              möglich zu gestalten.
             </p>
           </section>
 
