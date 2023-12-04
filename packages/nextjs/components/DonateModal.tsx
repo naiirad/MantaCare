@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-
-// Stellen Sie sicher, dass React importiert wird
+import React, { useState, useEffect } from 'react';
+import { useScaffoldContractWrite } from '~~/hooks/scaffold-eth';
+import CustomDropdown from './CustomDropdown';
 
 type DonateModalProps = {
   projectId: number;
@@ -8,47 +8,70 @@ type DonateModalProps = {
 };
 
 const DonateModal: React.FC<DonateModalProps> = ({ projectId, onClose }) => {
-  const [currency, setCurrency] = useState<string>("DFI");
-  const [amount, setAmount] = useState<string>("");
-  const [isApproved, setIsApproved] = useState<boolean>(true);
+  const [donationAmount, setDonationAmount] = useState<string>('');
+  const [selectedToken, setSelectedToken] = useState('DFI'); // Standardmäßig DFI ausgewählt
+  const [isApproveNeeded, setIsApproveNeeded] = useState(false);
 
-  const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrency(e.target.value);
-    setIsApproved(e.target.value === "DFI"); // Setze isApproved auf false für ERC20-Token
-  };
+  const toWei = (ether: string) => BigInt(ether) * BigInt(10 ** 18);
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(e.target.value);
-  };
+  const projectIdBigInt = BigInt(projectId);
 
-  const handleApprove = async () => {
-    // Füge hier die Logik für die Token-Genehmigung hinzu
-    setIsApproved(true); // Nach erfolgreicher Genehmigung
-  };
+  const { writeAsync: donate, isMining } = useScaffoldContractWrite({
+    contractName: "MantaCare_DonationHub",
+    functionName: selectedToken === 'DFI' ? "donateDFI" : "donateWithToken",
+  args: selectedToken === 'DFI' ? [projectIdBigInt] : [projectIdBigInt, selectedToken, BigInt(toWei(donationAmount))],
+  value: selectedToken === 'DFI' ? BigInt(toWei(donationAmount)) : undefined,
+});
 
-  const handleDonate = async () => {
-    if (currency === "DFI") {
-      // Rufe hier die donateDFI Funktion auf
-    } else {
-      // Rufe hier die donateWithToken Funktion auf
+  useEffect(() => {
+    setIsApproveNeeded(selectedToken !== 'DFI');
+  }, [selectedToken]);
+
+  const handleDonateClick = async () => {
+    try {
+      await donate();
+      onClose();
+    } catch (error) {
+      console.error("Error during donation: ", error);
     }
-    onClose(); // Schließe das Modal nach der Transaktion
+  };
+
+  const handleOverlayClick = (e: { target: { classList: { contains: (arg0: string) => any; }; }; }) => {
+    if (e.target.classList.contains('modal-overlay')) {
+      onClose();
+    }
   };
 
   return (
-    <div className="modal">
-      <div>Projekt-ID: {projectId}</div>
-      <div className="modal-content">
-        <select value={currency} onChange={handleCurrencyChange}>
-          <option value="DFI">DFI</option>
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-          <option value="EURC">EURC</option>
-          <option value="jUSD">jUSD</option>
-        </select>
-        <input type="text" value={amount} onChange={handleAmountChange} placeholder="Betrag" />
-        {isApproved ? <button onClick={handleDonate}>Senden</button> : <button onClick={handleApprove}>Approve</button>}
-        <button onClick={onClose}>Schließen</button>
+    <div className="modal-overlay" onClick={handleOverlayClick}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Donate to: Medical Response Crew</h2>
+        </div>
+        <div className="modal-body">
+          <CustomDropdown
+            selected={selectedToken}
+            onChange={(value) => setSelectedToken(value)}
+            options={[
+              { value: 'DFI', label: 'DFI', imagePath: '/dfi.png' },
+              { value: 'USDT', label: 'USDT', imagePath: '/usdt.png' },
+              { value: 'USDC', label: 'USDC', imagePath: '/usdc.png' },
+              { value: 'JUSD', label: 'jUSD', imagePath: '/jusd.png' },
+            ]}
+          />
+          <input
+            className="input-field"
+            type="number"
+            placeholder="e.g. 1.83"
+            value={donationAmount}
+            onChange={(e) => setDonationAmount(e.target.value)}
+          />
+        </div>
+        <div className="modal-footer">
+          <button className="modal-button button-gradient-hover" onClick={handleDonateClick} disabled={isMining}>
+            {isApproveNeeded ? 'Approve & Donate' : 'Donate'}
+          </button>
+        </div>
       </div>
     </div>
   );

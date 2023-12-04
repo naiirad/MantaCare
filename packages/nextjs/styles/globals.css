@@ -40,3 +40,139 @@ p {
   background: linear-gradient(45deg, #143146, #25597e);
   color: white;
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1001; 
+  max-width: 50%;
+}
+
+.modal-header {
+  padding: 15px;
+  color: #fff; /* Weiße Schriftfarbe */
+  background: #1a1a1a; /* Leicht hellerer Hintergrund als der Content */
+  border-top-left-radius: 10px; /* Abgerundete Ecken oben */
+  border-top-right-radius: 10px;
+  font-size: x-large;
+}
+
+.modal-body {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: #143146; /* Hintergrund für den mittleren Abschnitt */
+}
+
+.custom-dropdown {
+  display: flex;
+  flex-direction: column;
+  background-color: #143146; /* Dropdown-Hintergrundfarbe */
+  border-radius: 8px; /* Runde Ecken */
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-selected {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  background-color: #143146;
+  border: 8px solid;
+  border-color: #143146;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #143146;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.dropdown-option:not(:last-child) {
+  border-bottom: 1px solid #ffffff22;
+}
+
+.dropdown-option:hover {
+  background-color: #ffffff22;
+}
+
+.dropdown-label {
+  margin-left: 8px; /* Abstand zwischen Bild und Text */
+  color: white; /* Textfarbe */
+  font-size: x-large;
+}
+
+.modal-input {
+  margin-left: 10px; /* Abstand zum Dropdown-Menü */
+  flex-grow: 1; /* Nimmt verfügbaren Platz ein */
+  border-radius: 5px;
+  padding: 5px;
+  background: #bce8eb; /* Heller Hintergrund */
+  color: #000; /* Schwarze Schrift */
+  border: none;
+}
+
+.modal-footer {
+  background: #b38945; /* Farblich abgehobener Hintergrund */
+  border-bottom-left-radius: 10px; /* Abgerundete Ecken unten */
+  border-bottom-right-radius: 10px;
+  font-size: x-large;
+}
+
+.modal-button {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  background: #b38945; /* Dunklerer Hintergrund als der Footer */
+  color: #fff; /* Weiße Schrift */
+  border: none;
+}
+
+.input-field::-webkit-inner-spin-button,
+.input-field::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-field[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.input-field:focus {
+  outline: none; /* Entfernt den Fokus-Umriss */
+  border: none; /* Entfernt die Randlinie, falls vorhanden */
+}
+
+.input-field {
+  /* Vorhandene Stile */
+  color: white; /* Textfarbe weiß */
+  background-color: #143146; /* Dunkelblauer Hintergrund */
+  text-align: right; /* Text rechtsbündig */
+}

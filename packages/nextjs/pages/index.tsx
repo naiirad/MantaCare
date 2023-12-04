@@ -14,6 +14,10 @@ const Home: NextPage = () => {
     setShowModal(true);
   };
 
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   const projects = [
     { id: 0, name: "Medical Response Crew", imageUrl: "/mrc.jpg" },
     { id: 1, name: "Crisis Relief Team", imageUrl: "/crt.png" },
@@ -83,9 +87,9 @@ const Home: NextPage = () => {
         </main>
 
         {showModal && selectedProject !== null && (
-          <DonateModal projectId={selectedProject} onClose={() => setShowModal(false)} />
-        )}
-      </div>
+        <DonateModal projectId={selectedProject} onClose={closeModal} />
+      )}
+    </div>
     </>
   );
 };
