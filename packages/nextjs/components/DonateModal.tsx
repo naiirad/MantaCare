@@ -4,15 +4,22 @@ import CustomDropdown from './CustomDropdown';
 
 type DonateModalProps = {
   projectId: number;
+  projectName: string;
   onClose: () => void;
 };
 
-const DonateModal: React.FC<DonateModalProps> = ({ projectId, onClose }) => {
+const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClose }) => {
   const [donationAmount, setDonationAmount] = useState<string>('');
   const [selectedToken, setSelectedToken] = useState('DFI'); // Standardmäßig DFI ausgewählt
   const [isApproveNeeded, setIsApproveNeeded] = useState(false);
 
-  const toWei = (ether: string) => BigInt(ether) * BigInt(10 ** 18);
+  const toWei = (ether: string) => {
+    const parsed = parseFloat(ether);
+    if (isNaN(parsed)) {
+      return BigInt(0);
+    }
+    return BigInt(Math.floor(parsed * 10 ** 18));
+  };
 
   const projectIdBigInt = BigInt(projectId);
 
@@ -42,11 +49,29 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, onClose }) => {
     }
   };
 
+  const handleDonationAmountChange = (e) => {
+    const value = e.target.value.replace(',', '.');
+    
+    // Ermöglicht die Eingabe von Dezimalzahlen mit bis zu drei Nachkommastellen
+    const regexPattern = /^(?:\d+(?:[.,]\d{0,3})?|\d*[.,]\d{1,3})$/;
+  
+    // Überprüfen, ob der eingegebene Wert dem Muster entspricht
+    if (regexPattern.test(value) || value === '') {
+      const numericValue = parseFloat(value);
+      // Stellt sicher, dass der Wert im zulässigen Bereich liegt, wenn er eine gültige Zahl ist
+      if (isNaN(numericValue) || (numericValue >= 0 && numericValue <= 42000000)) {
+        setDonationAmount(value);
+      }
+    }
+  };
+  
+  
+
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Donate to: Medical Response Crew</h2>
+          <h2>Donate to: <span className="project-name">{projectName}</span></h2>
         </div>
         <div className="modal-body">
           <CustomDropdown
@@ -61,10 +86,12 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, onClose }) => {
           />
           <input
             className="input-field"
-            type="number"
-            placeholder="e.g. 1.83"
+            type="text"
+            placeholder="Enter amount"
             value={donationAmount}
-            onChange={(e) => setDonationAmount(e.target.value)}
+            onChange={handleDonationAmountChange}
+            min="0"
+            max="42000000"
           />
         </div>
         <div className="modal-footer">

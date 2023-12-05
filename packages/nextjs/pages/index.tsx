@@ -8,9 +8,11 @@ import { MetaHeader } from "~~/components/MetaHeader";
 const Home: NextPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [selectedProjectName, setSelectedProjectName] = useState<string>('');
 
-  const openDonateModal = (projectId: number) => {
+  const openDonateModal = (projectId: number, projectName: string) => {
     setSelectedProject(projectId);
+    setSelectedProjectName(projectName);
     setShowModal(true);
   };
 
@@ -69,7 +71,7 @@ const Home: NextPage = () => {
                   <div className="mt-4">
                     <button
                       className="bg-accent text-white p-2 rounded hover: button-gradient-hover"
-                      onClick={() => openDonateModal(project.id)}
+                      onClick={() => openDonateModal(project.id, project.name)}
                     >
                       Donate
                     </button>
@@ -87,7 +89,11 @@ const Home: NextPage = () => {
         </main>
 
         {showModal && selectedProject !== null && (
-        <DonateModal projectId={selectedProject} onClose={closeModal} />
+        <DonateModal
+          projectId={selectedProject}
+          projectName={selectedProjectName}
+          onClose={closeModal}
+        />
       )}
     </div>
     </>

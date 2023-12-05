@@ -175,4 +175,10 @@ p {
   color: white; /* Textfarbe weiß */
   background-color: #143146; /* Dunkelblauer Hintergrund */
   text-align: right; /* Text rechtsbündig */
+  font-weight: bold;
+}
+
+.project-name {
+  font-size: 0.9em; /* Kleiner als der Rest */
+  margin-left: 0.5em; /* Abstand zur linken Seite */
 }
