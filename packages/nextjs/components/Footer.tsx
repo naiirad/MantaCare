@@ -28,7 +28,7 @@ export const Footer = () => {
             </div>
             <span>·</span>
             <div className="text-center">
-              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
+              <a href="https://twitter.com/Manta_Care" target="_blank" rel="noreferrer" className="link">
                 X
               </a>
             </div>
