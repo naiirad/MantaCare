@@ -130,6 +130,10 @@ const config: HardhatUserConfig = {
       url: "https://sepolia.publicgoods.network",
       accounts: [deployerPrivateKey],
     },
+    dmcTestnet: {
+      url: "https://dmc.mydefichain.com/testnet",
+      accounts: [deployerPrivateKey],
+    },
   },
   verify: {
     etherscan: {

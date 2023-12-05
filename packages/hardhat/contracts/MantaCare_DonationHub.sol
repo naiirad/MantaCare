@@ -31,7 +31,7 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
     mapping(address => bool) private supportedTokens; // Mapping to track supported ERC20 tokens.
 
     // Event emitted when a donation is made.
-    event DonationMade(address indexed donor, uint indexed projectId, uint amount);
+    event DonationMade(address indexed donor, uint indexed projectId, uint amount, string currency);
     // Event emitted when a token is added.
     event TokenAdded(address indexed tokenAddress);
     // Event emitted when a token is removed.
@@ -103,7 +103,7 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
 
         projects[projectId].pendingWithdrawals += donationAmount;
 
-        emit DonationMade(msg.sender, projectId, msg.value);
+        emit DonationMade(msg.sender, projectId, msg.value, "DFI");
         withdrawDFIDonations(projectId);
     }
 

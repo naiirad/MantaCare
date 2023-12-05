@@ -27,6 +27,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     autoMine: true,
   });
 
+  await deploy("jUSD", {
+    from: deployer,
+    log: true,
+    autoMine: true,
+  });
+
   // Get the deployed contract
   // const yourContract = await hre.ethers.getContract("YourContract", deployer);
 };

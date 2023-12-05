@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ethers } from './ethers';
+import deployedContracts from '../contracts/deployedContracts';
 import { useScaffoldContractWrite } from '~~/hooks/scaffold-eth';
 import CustomDropdown from './CustomDropdown';
 
@@ -8,10 +10,16 @@ type DonateModalProps = {
   onClose: () => void;
 };
 
+const tokenAddresses = {
+  USDT: "0x...",
+  USDC: "0x...", 
+  JUSD: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+  EURC: "0x..." 
+};
+
 const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClose }) => {
   const [donationAmount, setDonationAmount] = useState<string>('');
-  const [selectedToken, setSelectedToken] = useState('DFI'); // Standardmäßig DFI ausgewählt
-  const [isApproveNeeded, setIsApproveNeeded] = useState(false);
+  const [selectedToken, setSelectedToken] = useState('JUSD');
 
   const toWei = (ether: string) => {
     const parsed = parseFloat(ether);
@@ -23,19 +31,49 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClo
 
   const projectIdBigInt = BigInt(projectId);
 
-  const { writeAsync: donate, isMining } = useScaffoldContractWrite({
-    contractName: "MantaCare_DonationHub",
-    functionName: selectedToken === 'DFI' ? "donateDFI" : "donateWithToken",
-  args: selectedToken === 'DFI' ? [projectIdBigInt] : [projectIdBigInt, selectedToken, BigInt(toWei(donationAmount))],
-  value: selectedToken === 'DFI' ? BigInt(toWei(donationAmount)) : undefined,
-});
+  let selectedTokenAddress;
+  if (selectedToken !== 'DFI') {
+    selectedTokenAddress = tokenAddresses[selectedToken as keyof typeof tokenAddresses];
+  }
 
-  useEffect(() => {
-    setIsApproveNeeded(selectedToken !== 'DFI');
-  }, [selectedToken]);
+  let writeConfig;
+
+  if (selectedToken === 'DFI') {
+    writeConfig = {
+      contractName: "MantaCare_DonationHub",
+      functionName: "donateDFI",
+      args: [projectIdBigInt],
+      value: BigInt(toWei(donationAmount))
+    };
+  } else {
+    writeConfig = {
+      contractName: "MantaCare_DonationHub",
+      functionName: "donateWithToken",
+      args: [projectIdBigInt, selectedTokenAddress, BigInt(toWei(donationAmount))],
+      value: undefined
+    };
+  }
+
+  const { writeAsync: donate, isMining } = useScaffoldContractWrite(writeConfig);
+
+  // Funktion zum Erteilen der Genehmigung (Approval)
+  const approveTokens = async () => {
+    if (selectedToken !== 'DFI') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const jUSDAddress = deployedContracts[31337].jUSD.address; 
+      const jUSDABI = deployedContracts[31337].jUSD.abi;
+      const tokenContract = new ethers.Contract(jUSDAddress, jUSDABI, signer);
+      const amountToApprove = ethers.utils.parseUnits(donationAmount, 18);
+      await tokenContract.approve(deployedContracts[31337].MantaCare_DonationHub.address, amountToApprove);
+    }
+  };
 
   const handleDonateClick = async () => {
     try {
+      if (selectedToken !== 'DFI') {
+        await approveTokens();
+      }
       await donate();
       onClose();
     } catch (error) {
@@ -82,6 +120,7 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClo
               { value: 'USDT', label: 'USDT', imagePath: '/usdt.png' },
               { value: 'USDC', label: 'USDC', imagePath: '/usdc.png' },
               { value: 'JUSD', label: 'jUSD', imagePath: '/jusd.png' },
+              { value: 'EURC', label: 'EURC', imagePath: '/eurc.png' },
             ]}
           />
           <input
@@ -96,7 +135,6 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClo
         </div>
         <div className="modal-footer">
           <button className="modal-button button-gradient-hover" onClick={handleDonateClick} disabled={isMining}>
-            {isApproveNeeded ? 'Approve & Donate' : 'Donate'}
           </button>
         </div>
       </div>
