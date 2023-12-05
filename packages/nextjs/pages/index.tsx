@@ -8,7 +8,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 const Home: NextPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
-  const [selectedProjectName, setSelectedProjectName] = useState<string>('');
+  const [selectedProjectName, setSelectedProjectName] = useState<string>("");
 
   const openDonateModal = (projectId: number, projectName: string) => {
     setSelectedProject(projectId);
@@ -41,7 +41,7 @@ const Home: NextPage = () => {
           <Image src="/MantaCare_Hintergrund.png" alt="Hintergrund" width={572} height={572} layout="responsive" />
         </div>
 
-        <div className="text-over-image absolute top-1/3 -left-96 right-32 transform -translate-y-1/2">
+        <div className="text-over-image absolute top-1/4 pl-32">
           <div className="max-w-md mx-auto text-left">
             <h1 className="text-4xl font-bold">Your Donation-Hub</h1>
             <h2 className="text-xl">Wellcome back!</h2>
@@ -89,13 +89,9 @@ const Home: NextPage = () => {
         </main>
 
         {showModal && selectedProject !== null && (
-        <DonateModal
-          projectId={selectedProject}
-          projectName={selectedProjectName}
-          onClose={closeModal}
-        />
-      )}
-    </div>
+          <DonateModal projectId={selectedProject} projectName={selectedProjectName} onClose={closeModal} />
+        )}
+      </div>
     </>
   );
 };
