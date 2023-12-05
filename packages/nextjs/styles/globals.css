@@ -58,15 +58,20 @@ p {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1001; 
-  max-width: 50%;
+  min-width: 420px;
+  max-width: 800px;
+  min-height: 400px;
+  max-height: 600px;
 }
 
 .modal-header {
-  padding: 15px;
-  color: #fff; /* Weiße Schriftfarbe */
-  background: #1a1a1a; /* Leicht hellerer Hintergrund als der Content */
-  border-top-left-radius: 10px; /* Abgerundete Ecken oben */
-  border-top-right-radius: 10px;
+  padding: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: #fff;
+  background: linear-gradient(180deg, #102838, #143146);
+  border-top-left-radius: 20px; 
+  border-top-right-radius: 20px;
   font-size: x-large;
 }
 
@@ -74,25 +79,22 @@ p {
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  background: #143146; /* Hintergrund für den mittleren Abschnitt */
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background: linear-gradient(0deg, #143146, #183c55);
 }
 
 .custom-dropdown {
   display: flex;
   flex-direction: column;
-  background-color: #143146; /* Dropdown-Hintergrundfarbe */
-  border-radius: 8px; /* Runde Ecken */
   position: relative;
-  display: inline-block;
 }
 
 .dropdown-selected {
   display: flex;
   align-items: center;
-  padding: 5px;
-  background-color: #143146;
-  border: 8px solid;
-  border-color: #143146;
+  padding: 12px;
+  border: 8px;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -102,7 +104,6 @@ p {
   top: 100%;
   left: 0;
   background-color: #143146;
-  border-radius: 8px;
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 10;
@@ -124,33 +125,24 @@ p {
 }
 
 .dropdown-label {
-  margin-left: 8px; /* Abstand zwischen Bild und Text */
+  margin-left: 10px; /* Abstand zwischen Bild und Text */
   color: white; /* Textfarbe */
   font-size: x-large;
 }
 
-.modal-input {
-  margin-left: 10px; /* Abstand zum Dropdown-Menü */
-  flex-grow: 1; /* Nimmt verfügbaren Platz ein */
-  border-radius: 5px;
-  padding: 5px;
-  background: #bce8eb; /* Heller Hintergrund */
-  color: #000; /* Schwarze Schrift */
-  border: none;
-}
-
 .modal-footer {
   background: #b38945; /* Farblich abgehobener Hintergrund */
-  border-bottom-left-radius: 10px; /* Abgerundete Ecken unten */
-  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 20px; /* Abgerundete Ecken unten */
+  border-bottom-right-radius: 20px;
   font-size: x-large;
 }
 
 .modal-button {
   width: 100%;
   padding: 15px;
-  border-radius: 10px;
-  background: #b38945; /* Dunklerer Hintergrund als der Footer */
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  background: #b38945; 
   color: #fff; /* Weiße Schrift */
   border: none;
 }
@@ -166,19 +158,18 @@ p {
 }
 
 .input-field:focus {
-  outline: none; /* Entfernt den Fokus-Umriss */
-  border: none; /* Entfernt die Randlinie, falls vorhanden */
+  outline: none; 
+  border: none; 
 }
 
 .input-field {
-  /* Vorhandene Stile */
-  color: white; /* Textfarbe weiß */
-  background-color: #143146; /* Dunkelblauer Hintergrund */
-  text-align: right; /* Text rechtsbündig */
+  color: ffffff; 
+  background-color: transparent; 
+  text-align: right; 
   font-weight: bold;
 }
 
 .project-name {
-  font-size: 0.9em; /* Kleiner als der Rest */
-  margin-left: 0.5em; /* Abstand zur linken Seite */
+  font-size: 0.9em;
+  margin-left: 0.5em;
 }

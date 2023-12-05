@@ -2,17 +2,15 @@ import Image from "next/image";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 
-const MantaCare: NextPage = () => {
+const mantacare: NextPage = () => {
   return (
     <>
       <MetaHeader title="MantaCare" description="Connect. Donate. Transform." />
 
       <main className="py-16">
         <div className="relative max-w-screen-2xl mx-auto px-4">
-          {/* Überschrift */}
           <h1 className="text-5xl font-bold text-center mb-10">MantaCare</h1>
 
-          {/* Abschnitt 1 */}
           <section className="mb-6">
             <h2 className="text-2xl font-semibold mb-4">The origins of MantaCare</h2>
             <p>
@@ -43,7 +41,6 @@ const MantaCare: NextPage = () => {
             </div>
           </section>
 
-          {/* Abschnitt 2 */}
           <section className="mb-6">
             <h2 className="text-2xl font-semibold mb-4">Challenges and goals</h2>
             <p>
@@ -76,7 +73,6 @@ const MantaCare: NextPage = () => {
             </p>
           </section>
 
-          {/* Abschnitt 3 */}
           <section>
             <h2 className="text-2xl font-semibold mb-4">Mission and guiding principles</h2>
             <p className="mb-4">
@@ -101,4 +97,4 @@ const MantaCare: NextPage = () => {
   );
 };
 
-export default MantaCare;
+export default mantacare;
