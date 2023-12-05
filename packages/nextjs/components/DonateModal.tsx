@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ethers } from './ethers';
-import deployedContracts from '../contracts/deployedContracts';
-import { useScaffoldContractWrite } from '~~/hooks/scaffold-eth';
-import CustomDropdown from './CustomDropdown';
+import React, { useEffect, useState } from "react";
+import CustomDropdown from "./CustomDropdown";
+import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 type DonateModalProps = {
   projectId: number;
@@ -12,14 +10,15 @@ type DonateModalProps = {
 
 const tokenAddresses = {
   USDT: "0x...",
-  USDC: "0x...", 
-  JUSD: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-  EURC: "0x..." 
+  USDC: "0x...",
+  JUSD: "0x5E709AA98290844D6E8D593c599f31fdDB0B37F3",
+  EURC: "0x...",
 };
 
 const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClose }) => {
-  const [donationAmount, setDonationAmount] = useState<string>('');
-  const [selectedToken, setSelectedToken] = useState('JUSD');
+  const [donationAmount, setDonationAmount] = useState<string>("");
+  const [selectedToken, setSelectedToken] = useState("JUSD"); // Standardmäßig JUSD ausgewählt
+  const [isApproveNeeded, setIsApproveNeeded] = useState(false);
 
   const toWei = (ether: string) => {
     const parsed = parseFloat(ether);
@@ -31,49 +30,41 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClo
 
   const projectIdBigInt = BigInt(projectId);
 
+  if (selectedToken !== "DFI" && !tokenAddresses.hasOwnProperty(selectedToken)) {
+    throw new Error("Invalid token selected");
+  }
+
   let selectedTokenAddress;
-  if (selectedToken !== 'DFI') {
+  if (selectedToken !== "DFI") {
     selectedTokenAddress = tokenAddresses[selectedToken as keyof typeof tokenAddresses];
   }
 
   let writeConfig;
 
-  if (selectedToken === 'DFI') {
+  if (selectedToken === "DFI") {
     writeConfig = {
-      contractName: "MantaCare_DonationHub",
-      functionName: "donateDFI",
-      args: [projectIdBigInt],
-      value: BigInt(toWei(donationAmount))
+      contractName: "MantaCare_DonationHub" as const,
+      functionName: "donateDFI" as const,
+      args: [projectIdBigInt] as const,
+      value: BigInt(toWei(donationAmount)),
     };
   } else {
     writeConfig = {
-      contractName: "MantaCare_DonationHub",
-      functionName: "donateWithToken",
-      args: [projectIdBigInt, selectedTokenAddress, BigInt(toWei(donationAmount))],
-      value: undefined
+      contractName: "MantaCare_DonationHub" as const,
+      functionName: "donateWithToken" as const,
+      args: [projectIdBigInt, selectedTokenAddress, BigInt(toWei(donationAmount))] as const,
+      value: undefined,
     };
   }
 
   const { writeAsync: donate, isMining } = useScaffoldContractWrite(writeConfig);
 
-  // Funktion zum Erteilen der Genehmigung (Approval)
-  const approveTokens = async () => {
-    if (selectedToken !== 'DFI') {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const jUSDAddress = deployedContracts[31337].jUSD.address; 
-      const jUSDABI = deployedContracts[31337].jUSD.abi;
-      const tokenContract = new ethers.Contract(jUSDAddress, jUSDABI, signer);
-      const amountToApprove = ethers.utils.parseUnits(donationAmount, 18);
-      await tokenContract.approve(deployedContracts[31337].MantaCare_DonationHub.address, amountToApprove);
-    }
-  };
+  useEffect(() => {
+    setIsApproveNeeded(selectedToken !== "DFI");
+  }, [selectedToken]);
 
   const handleDonateClick = async () => {
     try {
-      if (selectedToken !== 'DFI') {
-        await approveTokens();
-      }
       await donate();
       onClose();
     } catch (error) {
@@ -81,20 +72,20 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClo
     }
   };
 
-  const handleOverlayClick = (e: { target: { classList: { contains: (arg0: string) => any; }; }; }) => {
-    if (e.target.classList.contains('modal-overlay')) {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.currentTarget.classList.contains("modal-overlay")) {
       onClose();
     }
   };
 
-  const handleDonationAmountChange = (e) => {
-    const value = e.target.value.replace(',', '.');
-    
+  const handleDonationAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(",", ".");
+
     // Ermöglicht die Eingabe von Dezimalzahlen mit bis zu drei Nachkommastellen
     const regexPattern = /^(?:\d+(?:[.,]\d{0,3})?|\d*[.,]\d{1,3})$/;
-  
+
     // Überprüfen, ob der eingegebene Wert dem Muster entspricht
-    if (regexPattern.test(value) || value === '') {
+    if (regexPattern.test(value) || value === "") {
       const numericValue = parseFloat(value);
       // Stellt sicher, dass der Wert im zulässigen Bereich liegt, wenn er eine gültige Zahl ist
       if (isNaN(numericValue) || (numericValue >= 0 && numericValue <= 42000000)) {
@@ -102,25 +93,25 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClo
       }
     }
   };
-  
-  
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Donate to: <span className="project-name">{projectName}</span></h2>
+          <h2>
+            Donate to: <span className="project-name">{projectName}</span>
+          </h2>
         </div>
         <div className="modal-body">
           <CustomDropdown
             selected={selectedToken}
-            onChange={(value) => setSelectedToken(value)}
+            onChange={value => setSelectedToken(value)}
             options={[
-              { value: 'DFI', label: 'DFI', imagePath: '/dfi.png' },
-              { value: 'USDT', label: 'USDT', imagePath: '/usdt.png' },
-              { value: 'USDC', label: 'USDC', imagePath: '/usdc.png' },
-              { value: 'JUSD', label: 'jUSD', imagePath: '/jusd.png' },
-              { value: 'EURC', label: 'EURC', imagePath: '/eurc.png' },
+              { value: "DFI", label: "DFI", imagePath: "/dfi.png" },
+              { value: "USDT", label: "USDT", imagePath: "/usdt.png" },
+              { value: "USDC", label: "USDC", imagePath: "/usdc.png" },
+              { value: "JUSD", label: "jUSD", imagePath: "/jusd.png" },
+              { value: "EURC", label: "EURC", imagePath: "/eurc.png" },
             ]}
           />
           <input
@@ -135,6 +126,7 @@ const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClo
         </div>
         <div className="modal-footer">
           <button className="modal-button button-gradient-hover" onClick={handleDonateClick} disabled={isMining}>
+            {isApproveNeeded ? "Approve & Donate" : "Donate"}
           </button>
         </div>
       </div>
