@@ -48,11 +48,11 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
     // Constructor to add initial projects.
     constructor() {
         // Add the first project
-        setProject(0, payable(address(0x70997970C51812dc3A010C7d01b50e0d17dc79C8)), "Medical Response Crew", ProjectCategory.Medical);
+        setProject(0, payable(address(0xa1E948D4785DD0E11d08954Ab82aF2A7C93464A2)), "Medical Response Crew", ProjectCategory.Medical);
         // Add the second project
-        setProject(1, payable(address(0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC)), "Crisis Relief Team", ProjectCategory.Humanitarian);
+        setProject(1, payable(address(0xB24125E52c1Df873A79162476c15fd41c8fED4D5)), "Crisis Relief Team", ProjectCategory.Humanitarian);
         // Add the third project
-        setProject(2, payable(address(0x90F79bf6EB2c4f870365E785982E1f101E93b906)), "Humanitas in Centro", ProjectCategory.Infrastructure);
+        setProject(2, payable(address(0x0Cdc218EEe59eC1424A25AFC0c98C6b691CA4775)), "Humanitas in Centro", ProjectCategory.Infrastructure);
     }
 
     // Modifier to check if a project exists.

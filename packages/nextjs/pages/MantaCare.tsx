@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 
-const MRC: NextPage = () => {
+const MantaCare: NextPage = () => {
   return (
     <>
       <MetaHeader title="MantaCare" description="Connect. Donate. Transform." />
@@ -14,23 +14,23 @@ const MRC: NextPage = () => {
 
           {/* Abschnitt 1 */}
           <section className="mb-6">
-            <h2 className="text-2xl font-semibold mb-4">Entstehung von MantaCare</h2>
+            <h2 className="text-2xl font-semibold mb-4">The origins of MantaCare</h2>
             <p>
-              MantaCare ist eine persönliche Initiative die aus meinen Erfahrungen als Teil der „Medical Response Crew“
-              geboren wurde. Es eröffnete sich mir die Welt der humanitären Hilfe im Oktober 2023 in einem neuen Licht.
-              Inmitten des Krieges in Kharkiv, Ostukraine, entstand die Idee einer dezentralen Web3-Spendenplattform auf
-              der DeFi Metachain – MantaCare.
+              MantaCare is a personal initiative born out of my experience as part of the Medical Response Crew. was
+              born. In October 2023, the world of humanitarian aid opened up to me in a new light. In the midst of the
+              war in Kharkiv, Eastern Ukraine, the idea of a decentralized Web3 donation platform was born on the DeFi
+              metachain - MantaCare.
             </p>
             <div className="flex flex-col md:flex-row">
               <p className="pr-8">
-                In Kharkiv sah ich das Leid, aber auch den unerschütterlichen Willen der Menschen, sowohl auf der Seite
-                der Bevölkerung als auch auf der Seite der „Volunteers“. Ich traf engagierte Ukrainer und Menschen aus
-                der ganzen Welt, die trotz der stets drohenden großen Gefahr unermüdlich halfen. Ihre Geschichten und
-                die direkte Konfrontation mit den Herausforderungen kleiner Hilfsorganisationen prägten mich tief. Diese
-                Organisationen, oft unbekannt und ohne große finanzielle Rückendeckung, zeichnen sich durch ihre
-                Selbstlosigkeit und die Bereitschaft über ihre Grenzen hinauszugehen aus – Menschen, die freiwillig ihre
-                Liebsten verlassen, um das erste Mal in ihrem Leben unter Artilleriebeschuss zu stehen damit sie den
-                Bedarf bei fremden Kindern in einem Frontdorf ermitteln.
+                In Kharkiv, I saw the suffering, but also the unwavering will of the people, both on the side of the of
+                the population as well as on the side of the volunteers. I met committed Ukrainians and people from from
+                all over the world who helped tirelessly despite the constant threat of great danger. Their stories and
+                direct confrontation with the challenges faced by small aid organizations left a deep impression on me.
+                These organizations, often unknown and without much financial backing, are characterized by their
+                selflessness their selflessness and willingness to go beyond their limits - people who voluntarily leave
+                their who voluntarily leave their loved ones to come under artillery fire for the first time in their
+                lives to meet the to determine the needs of foreign children in a frontline village.
               </p>
               <Image
                 src="/Ukraine_MantaCare1.jpg"
@@ -45,11 +45,11 @@ const MRC: NextPage = () => {
 
           {/* Abschnitt 2 */}
           <section className="mb-6">
-            <h2 className="text-2xl font-semibold mb-4">Herausforderungen und Ziele</h2>
+            <h2 className="text-2xl font-semibold mb-4">Challenges and goals</h2>
             <p>
-              Diese Erfahrungen offenbarten mir die größte Stärke, aber auch die größte Schwäche kleiner
-              Hilfsorganisationen: Ihre Agilität und ihr konkretes Handeln kommt der Bevölkerung im direkten Übertrag
-              zugute. Gleichzeitig sind die finanziellen Mittel und damit auch die Reichweite stark begrenzt.
+              These experiences revealed to me the greatest strength, but also the greatest weakness of small aid
+              organizations: Their agility and concrete action benefits the population in direct transfer. benefit the
+              population. At the same time, their financial resources and therefore their reach are very limited.
             </p>
             <div className="flex flex-col md:flex-row">
               <Image
@@ -61,30 +61,29 @@ const MRC: NextPage = () => {
                 style={{ maxWidth: "50%" }}
               />
               <p className="pl-8">
-                Genau hier setzt MantaCare an. Unsere Kernphilosophie basiert darauf, kleine, aber wirkungsvolle
-                Projekte zu unterstützen, die einen unmittelbaren Einfluss haben können. Wir wollen die Bekanntheit
-                dieser Organisationen erhöhen, über ihre Potenziale aufklären und ihnen die Mittel zur Verfügung
-                stellen, die sie benötigen. Solche Organisationen gibt es in allen Bereichen, Bildung, Umweltschutz,
-                Forschung oder eben humanitär.
+                This is exactly where MantaCare comes in. Our core philosophy is based on supporting small but effective
+                projects that can have an immediate impact. We want to raise the profile of these organizations, raise
+                awareness of their potential and provide them with the resources they need. that they need. Such
+                organizations exist in all areas, education, environmental protection, research or humanitarian work.
               </p>
             </div>
             <p>
-              MantaCare soll eine Brücke zwischen denen, die helfen wollen und denen, die Hilfe benötigen um anderen zu
-              helfen, darstellen. Wir streben danach Zivilcourage wieder zu fördern, Mitmenschen auch über Grenzen
-              hinweg als Nachbarn zu behandeln und sich auch für Ereignisse verantwortlich zu fühlen, die nicht direkt
-              vor den Augen passieren. Dabei ist es uns wichtig, alles so dezentral, transparent und unkompliziert wie
-              möglich zu gestalten.
+              MantaCare is intended to be a bridge between those who want to help and those who need help to help
+              others. help others. We strive to promote civil courage again, to treat fellow human beings as neighbors
+              across borders as neighbors and to feel responsible for events that do not happen right in front of our
+              eyes. happen right in front of your eyes. It is important to us to make everything as decentralized,
+              transparent and uncomplicated as possible. as possible.
             </p>
           </section>
 
           {/* Abschnitt 3 */}
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Mission und Leitsatz</h2>
+            <h2 className="text-2xl font-semibold mb-4">Mission and guiding principles</h2>
             <p className="mb-4">
-              Unsere Mission bei MantaCare ist es, Verbindungen zu schaffen, Unterstützung zu mobilisieren und durch
-              gezielte Aktionen positive Veränderungen zu bewirken. Dabei soll die Community als Sprachrohr und als
-              treibende Kraft dienen. Neue Projekte sollen aus der Community kommen, um dann von der Community
-              unterstützt zu werden. Dies wird durch unseren einfachen, aber kraftvollen Leitsatz zusammengefasst:
+              Our mission at MantaCare is to create connections, mobilize support and effect positive change through
+              mobilize support and bring about positive change through targeted actions. The community should serve as a
+              mouthpiece and driving force. New projects should come from the community and then be supported by the
+              community. be supported by the community. This is summarized by our simple but powerful guiding principle:
             </p>
             <p className="text-2xl text-center">Connect. Donate. Transform.</p>
             <Image
@@ -102,4 +101,4 @@ const MRC: NextPage = () => {
   );
 };
 
-export default MRC;
+export default MantaCare;

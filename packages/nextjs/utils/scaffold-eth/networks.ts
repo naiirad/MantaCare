@@ -73,12 +73,14 @@ export function getBlockExplorerTxLink(chainId: number, txnHash: string) {
   }
 
   const targetChain = targetChainArr[0] as keyof typeof chains;
-  const blockExplorerTxURL = chains[targetChain]?.blockExplorers?.default?.url;
+  const chainConfig = chains[targetChain];
 
-  if (!blockExplorerTxURL) {
+  // Typüberprüfung zur Laufzeit
+  if (!("blockExplorers" in chainConfig) || !chainConfig.blockExplorers?.default?.url) {
     return "";
   }
 
+  const blockExplorerTxURL = chainConfig.blockExplorers.default.url;
   return `${blockExplorerTxURL}/tx/${txnHash}`;
 }
 

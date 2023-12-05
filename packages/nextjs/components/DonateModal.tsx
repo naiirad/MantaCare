@@ -17,7 +17,7 @@ const tokenAddresses = {
 
 const DonateModal: React.FC<DonateModalProps> = ({ projectId, projectName, onClose }) => {
   const [donationAmount, setDonationAmount] = useState<string>("");
-  const [selectedToken, setSelectedToken] = useState("JUSD"); // Standardmäßig JUSD ausgewählt
+  const [selectedToken, setSelectedToken] = useState("DFI"); // Standardmäßig DFI ausgewählt
   const [isApproveNeeded, setIsApproveNeeded] = useState(false);
 
   const toWei = (ether: string) => {
