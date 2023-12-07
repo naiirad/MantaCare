@@ -1,15 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDarkMode, useIsMounted } from "usehooks-ts";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 export const SwitchTheme = ({ className }: { className?: string }) => {
   const { isDarkMode, toggle } = useDarkMode();
+  const [initialized, setInitialized] = useState(false);
   const isMounted = useIsMounted();
 
   useEffect(() => {
+    const userPrefersDark = localStorage.getItem("theme") === "dark";
+    if (!initialized && !userPrefersDark) {
+      toggle();
+      setInitialized(true);
+    }
     const body = document.body;
     body.setAttribute("data-theme", isDarkMode ? "MantaCareDark" : "MantaCare");
-  }, [isDarkMode]);
+    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode, toggle, initialized]);
 
   return (
     <div className={`flex space-x-2 text-sm ${className}`}>
