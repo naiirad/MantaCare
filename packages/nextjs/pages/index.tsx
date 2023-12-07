@@ -46,7 +46,7 @@ const Home: NextPage = () => {
             {projects.map(project => (
               <div
                 key={project.id}
-                className={`bg-secondary p-4 rounded-xl shadow-md w-full mx-auto ${
+                className={`project-card bg-secondary p-4 rounded-xl shadow-md w-full mx-auto ${
                   project.isSpecial ? "bg-special cursor-pointer" : ""
                 }`}
                 style={{ opacity: project.isSpecial ? 0.5 : 1 }}

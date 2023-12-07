@@ -169,3 +169,10 @@ p {
   font-size: 0.9em;
   margin-left: 0.5em;
 }
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; 
+}
