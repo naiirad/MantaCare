@@ -8,14 +8,16 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
   const isMounted = useIsMounted();
 
   useEffect(() => {
-    const userPrefersDark = localStorage.getItem("theme") === "dark";
-    if (!initialized && !userPrefersDark) {
+    const userPrefersDark = localStorage.getItem("theme");
+    if (!userPrefersDark) {
+    }
+    if (!initialized || userPrefersDark !== "dark") {
       toggle();
       setInitialized(true);
     }
+
     const body = document.body;
     body.setAttribute("data-theme", isDarkMode ? "MantaCareDark" : "MantaCare");
-    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
   }, [isDarkMode, toggle, initialized]);
 
   return (
