@@ -86,9 +86,9 @@ contract MantaCare_DonationHub is Ownable, Pausable, ReentrancyGuard {
         return true;
     }
 
-    // Allows the owner to adjust the service fee between 1% and 3%.
+    // Allows the owner to adjust the service fee between 0% and 2%.
     function adjustServiceFee(uint newFeePercentage) public onlyOwner {
-        require(newFeePercentage >= 0 && newFeePercentage <= 30, "Fee must be between 0% and 3%");
+        require(newFeePercentage >= 0 && newFeePercentage <= 20, "Fee must be between 0% and 2%");
         serviceFeeBasisPoints = newFeePercentage;
         emit ServiceFeeAdjusted(newFeePercentage);
     }
