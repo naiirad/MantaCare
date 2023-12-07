@@ -117,7 +117,7 @@ p {
 }
 
 .dropdown-option:hover {
-  background-color: #ffffff22;
+  background: linear-gradient(45deg, #143146, #25597e);
 }
 
 .dropdown-label {
