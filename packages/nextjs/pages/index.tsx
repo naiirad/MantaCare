@@ -41,13 +41,6 @@ const Home: NextPage = () => {
           <Image src="/MantaCare_Hintergrund.png" alt="Hintergrund" width={572} height={572} layout="responsive" />
         </div>
 
-        <div className="text-over-image absolute top-1/4 pl-32">
-          <div className="max-w-md mx-auto text-left">
-            <h1 className="text-4xl font-bold">Your Donation-Hub</h1>
-            <h2 className="text-xl">Wellcome back!</h2>
-          </div>
-        </div>
-
         <main className="container mx-auto -my-32 p-16 relative mb-8">
           <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {projects.map(project => (
