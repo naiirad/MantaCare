@@ -24,7 +24,8 @@ const FAQ: NextPage = () => {
             <h3 className="text-xl font-bold">How does donating via MantaCare work?</h3>
             <p>
               Users can connect to their web wallet (like MetaMask) and then donate to specific organizations or spread
-              their donation evenly across all projects.
+              their donation evenly across all projects. In the future it will be possible to donate to specific
+              categories lie education, health, etc.
             </p>
           </div>
           <div className="text-left">
@@ -40,7 +41,7 @@ const FAQ: NextPage = () => {
             <p>
               MantaCare charges an initial fee of 1% of the donated amount, which is intended for the development work
               already done, maintenance of the service and future updates. The fee can vary in 0.1% steps between 0% and
-              a maximum of 3%. It is not technically possible to increase the fee further.
+              a maximum of 2%. It is not technically possible to increase the fee further.
             </p>
           </div>
           <div className="text-left mb-10">
@@ -67,7 +68,10 @@ const FAQ: NextPage = () => {
           </div>
           <div className="text-left mb-10">
             <h3 className="text-xl font-bold">Can I track my donations?</h3>
-            <p>Yes, users can view their total donation amounts for each project on the main page.</p>
+            <p>
+              Every donation emits a so called &quot;event&quot;, later it will be possible to track that. However, your
+              MantaCare Tokens are displayed on the dashboard.
+            </p>
           </div>
           <div className="text-left mb-10">
             <h3 className="text-xl font-bold">Is there a limit to the number of projects supported?</h3>
@@ -81,7 +85,7 @@ const FAQ: NextPage = () => {
             <h3 className="text-xl font-bold">What happens if a project is removed?</h3>
             <p>
               Donations that have already been made remain with the project, but no further donations can be made via
-              the platform.
+              the platform. The project can be re-added at any time by a vote.
             </p>
           </div>
           <div className="text-left mb-10">
@@ -124,8 +128,9 @@ const FAQ: NextPage = () => {
             <h3 className="text-xl font-bold">How does the MantaCare token work for voting?</h3>
             <p>
               It is planned to introduce a MantaCare Token for voting. Users can collect this token through donations.
-              When voting, the tokens are used for a project and then burned. This creates an incentive for active
-              participation and ensures fair and transparent decision-making.
+              For every 10$ donated to one of the projects, the user receives 1 MantaCare Token. When voting, the tokens
+              are used to vote for a project and then get burned. This creates an incentive for active participation and
+              ensures fair and transparent decision-making.
             </p>
           </div>
           <div className="text-left mb-10">
