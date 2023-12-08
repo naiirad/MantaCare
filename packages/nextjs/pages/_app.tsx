@@ -23,6 +23,13 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedTheme = localStorage.getItem("theme");
+      setIsDarkTheme(storedTheme !== "light");
+    }
+  }, []);
+
+  useEffect(() => {
     if (price > 0) {
       setNativeCurrencyPrice(price);
     }
