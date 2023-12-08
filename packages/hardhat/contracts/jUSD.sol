@@ -8,7 +8,7 @@ contract jUSD is ERC20 {
         uint256 totalSupply = 40000 * 10**uint256(decimals()); // Gesamtanzahl der Tokens mit Dezimalstellen
 
         // Verteile die Tokens bei der Erstellung des Contracts
-        _mint(0xABE99a64eea7917e483d6Cb38237002bfc6d3CBD, totalSupply / 2);
-        _mint(0x96106f0969F0ABFE796Dffa0c3ae91d953800306, totalSupply / 2);
+        _mint(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266, totalSupply / 2);
+        _mint(0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65, totalSupply / 2);
     }
 }
