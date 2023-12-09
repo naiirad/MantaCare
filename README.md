@@ -1,4 +1,4 @@
-# MantaCare Donation Plattform v0.2
+# MantaCare Donation Plattform v0.8
 
 An innovative web3 dApp where you can donate Cryptocurrencies and Tokens to small projekts with a humanitarian focus.
 
